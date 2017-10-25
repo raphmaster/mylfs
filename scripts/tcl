@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#version 8.6.6
+
+. $(dirname $_)/lib &&
+extract ${1}sources $0 $2 &&
+pushd unix &&
+./configure --prefix=/tools &&
+make -j $3 &&
+make -j $3 install &&
+chmod -v u+w /tools/lib/libtcl8.6.so &&
+make -j $3 install-private-headers &&
+ln -sv tclsh8.6 /tools/bin/tclsh &&
+remove ${1}sources $0 $2

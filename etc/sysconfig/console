@@ -1,0 +1,17 @@
+#This variable specifies the log level for kernel messages sent to the console as set by dmesg.
+#LOGLEVEL="7"(Default)
+
+#UTF-8 mode
+UNICODE="1"
+
+#This variable specifies the arguments for the loadkeys program.
+KEYMAP="qwerty/defkeymap.map"
+
+#This (rarely used) variable specifies the arguments for the second call to the loadkeys program.
+#KEYMAP_CORRECTIONS=""
+
+#The console bootscript will convert an available keymap to UTF-8 on the fly if this variable is set to the encoding of the available non-UTF-8 keymap.
+LEGACY_CHARSET="ISO-8859-1"
+
+#This variable specifies the arguments for the setfont program.
+FONT="lat1-16 -m 8859-1"

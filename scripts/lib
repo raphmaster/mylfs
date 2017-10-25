@@ -1,0 +1,60 @@
+#!/bin/bash
+
+#CSV file column count
+#Parameter 1: CSV file
+#Output: Number of columns
+function columnCount
+{
+        local columns=0
+        local x=0
+        local y=0
+        until [ $x -gt $(wc -l $1 | cut -d ' ' -f 1) ]
+        do
+                (( x++ ))
+                y=$(sed "${x}q;d" $1 | tr ',' ' ' | wc -w | cut -d ' ' -f 1)
+                if [ $y -gt $columns ]; then columns=$y; fi
+        done &&
+        echo $columns
+}
+
+#Find archive name from package name
+#Parameter 1: Package name
+#Parameter 2: Absolute path to packages URLs file
+#Output: Archive name
+function findArchive
+{
+	grep "^$1" $2 | cut -f 2 | rev | cut -d '/' -f 1 | rev
+}
+
+#Find archive root directory name
+#Parameter 1: Absolute path to directory where we can find the package
+#Parameter 2: Package name
+#Parameter 3: Absolute path to packages URLs file
+function archiveDirectory
+{
+	tar -tf ${1}/$(findArchive $2 $3) | sed '1q;d' | cut -d '/' -f 1
+}
+
+#cd to directory where is the package, decompress, untar package and cd to root directory of the archive
+#Parameter 1: Absolute path to directory where we can find the package
+#Parameter 2: Package to extract
+#Parameter 3: Absolute path to packages URLs file
+function extract
+{
+	pushd $1 &&
+	tar -xvf $(findArchive $2 $3) &&
+	pushd $(archiveDirectory $1 $2 $3)
+}
+
+#Exit package directory and remove it
+#Parameter 1: Absolute path to directory where we can find the package
+#Parameter 2: Package name
+#Parameter 3: Absolute path to packages URLs file
+function remove
+{
+	local x=$(dirs | wc -w) &&
+	(( x-- )) &&
+	cd $(dirs +$x) &&
+	dirs -c &&
+	rm -rvf ${1}/$(archiveDirectory $1 $2 $3)
+}

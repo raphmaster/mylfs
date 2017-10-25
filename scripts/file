@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#version 5.30
+
+. $(dirname $_)/lib &&
+extract ${1}sources $0 $2 &&
+if [ $# -eq 3 || $4 -eq 1 ]; then ./configure --prefix=/tools
+elif [ $4 -eq 2 ]; then ./configure --prefix=/usr; fi &&
+make -j $3 &&
+make -j $3 install &&
+remove ${1}sources $0 $2

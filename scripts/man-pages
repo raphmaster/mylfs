@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#version 4.09
+
+. $(dirname $_)/lib &&
+extract /sources $0 $2 &&
+make -j $3 install &&
+remove /sources $0 $2

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#version 1.0.3
+
+. $(dirname $_)/lib &&
+extract /sources $0 $2 &&
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/mpc-1.0.3 &&
+make -j $3 &&
+make -j $3 html &&
+make -j $3 install &&
+make -j $3 install-html &&
+remove /sources $0 $2

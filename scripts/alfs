@@ -1,0 +1,58 @@
+#!/bin/bash
+
+#Parameters check
+if [ $# -lt 4 ]; then echo -e 'Invalid number of parameters! Parameters are:
+1-Working directory
+2-Dependencies CSV file
+3-Packages download URLs file
+4-Number of processors to use
+5-(optional)Starting package to build'; exit 1; fi
+if [ ! -d $1 ]; then sudo mkdir -pv $1 || { echo 'Unable to create working directory:' $1; exit 1; }; fi
+if [ ! -e $2 ]; then echo 'Unable to locate dependencies CSV file:' $2; exit 1; fi
+if [ ! -e $3 ]; then echo 'Unable to locate packages download URLs file:' $3; exit 1; fi
+if [[ ! $4 =~ ^[0-9]+$ ]]; then echo 'Invalid number of processors to use:' $4; exit 1; fi
+#Source script library
+. $(dirname $_)/lib &&
+#If working directory do not have trailing slash, add it
+if [[ $1 =~ /$ ]]; then wdir=$1
+else wdir=${1}/; fi &&
+#If working directory is not an absolute path, make it absolute
+if [[ ! $wdir =~ ^/ ]]; then wdir=$(pwd)/$wdir; fi &&
+#If dependencies CSV file path is not an absolute path, make it absolute
+if [[ $2 =~ ^/ ]]; then csv=$2
+else csv=$(pwd)/$2; fi &&
+#If download URLs file is not an absolute path, make it absolute
+if [[ $3 =~ ^/ ]]; then urls=$3
+else urls=$(pwd)/$3; fi &&
+#Check if we dont need to wait for a specific package
+start='false' &&
+if [ $# -eq 4 ]; then start='true'; fi &&
+#Download all packages from URLs file if necessary
+if [ $start == 'true' ]; then
+#Creating sources directory where all packages will be downloaded and grant current user full access
+sudo mkdir -pv ${wdir}sources &&
+sudo chown -v $(logname): ${wdir}sources &&
+sudo chmod -v 750 ${wdir}sources &&
+cut -f 2- $3 | tr '\t' '\n' | wget -i - -nc -P ${wdir}sources
+fi &&
+#For each column in dependencies file
+column=0 &&
+until [ $column -ge $(columnCount $2) ]
+do
+	(( column++ )) &&
+	#For each package in column
+	for package in $(cut -d ',' -f $column $2)
+	do
+		#Check if we reached the starting package
+		if [ $package == $5 ]; then start='true'; fi
+		if [ $start == 'true' ]; then
+			#Packages starting with # are run in the current shell context
+			if [[ $package =~ ^# ]]; then cmd=". $(dirname $_)/$(echo $package | cut -d '#' -f 2) $wdir $urls $4 $(echo $package | cut -d '#' -f 3- | tr '#' ' ')"
+			#Others are run in subshell
+			else cmd="$(dirname &_)/$(echo $package | cut -d '#' -f 1) $wdir $urls $4 $(echo $package | cut -d '#' -f 2- | tr '#' ' ')"; fi
+			#Run package script and capture errors
+			$cmd || { echo $package 'script failed!'; exit 1; }
+		fi
+	done
+done &&
+echo 'alfs script success'

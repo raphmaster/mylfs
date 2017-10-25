@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#version 0.19.8.1
+
+. $(dirname $_)/lib &&
+extract ${1}sources $0 $2 &&
+pushd gettext-tools &&
+EMACS="no" ./configure --prefix=/tools --disable-shared &&
+make -j $3 -C gnulib-lib &&
+make -j $3 -C intl pluralx.c &&
+make -j $3 -C src msgfmt &&
+make -j $3 -C src msgmerge &&
+make -j $3 -C src xgettext &&
+cp -v src/{msgfmt,msgmerge,xgettext} /tools/bin &&
+remove ${1}sources $0 $2

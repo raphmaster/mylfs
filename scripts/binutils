@@ -1,0 +1,49 @@
+#!/bin/bash
+
+#version 2.27
+
+. $(dirname $_)/lib &&
+extract ${1}sources $0 $2 &&
+mkdir -v build &&
+pushd build &&
+if [ $# -eq 3 || $4 -eq 1 ]; then
+../configure --prefix=/tools            \
+    --with-sysroot=$1        \
+    --with-lib-path=/tools/lib \
+    --target=$LFS_TGT          \
+    --disable-nls              \
+    --disable-werror
+elif [ $4 -eq 2 ]; then
+CC=${LFS_TGT}-gcc                \
+AR=${LFS_TGT}-ar                 \
+RANLIB=${LFS_TGT}-ranlib         \
+../configure                   \
+    --prefix=/tools            \
+    --disable-nls              \
+    --disable-werror           \
+    --with-lib-path=/tools/lib \
+    --with-sysroot
+elif [ $4 -eq 3 ]; then
+if [[ ! $(expect -c "spawn ls") =~ spawn\ ls ]]; then echo 'Environment is not set up for proper PTY operation!'; exit 1; fi &&
+../configure --prefix=/usr       \
+             --enable-gold       \
+             --enable-ld=default \
+             --enable-plugins    \
+             --enable-shared     \
+             --disable-werror    \
+             --with-system-zlib
+fi &&
+if [ $# -eq 3 || $4 -eq 1 || $4 -eq 2 ]; then make -j $3
+elif [ $4 -eq 3 ]; then make -j $3 tooldir=/usr; fi &&
+if [ $# -eq 3 || $4 -eq 1 ]; then
+mkdir -pv /tools/lib &&
+ln -sv lib /tools/lib64
+fi &&
+if [ $# -eq 3 || $4 -eq 1 || $4 -eq 2 ]; then make -j $3 install
+elif [ $4 -eq 3 ]; then make -j $3 -k check && make -j $3 tooldir=/usr install; fi &&
+if [ $4 -eq 2 ]; then
+make -C ld clean
+make -C ld LIB_PATH=/usr/lib:/lib
+cp -v ld/ld-new /tools/bin
+fi &&
+remove ${1}sources $0 $2

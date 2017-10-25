@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#The Info documentation system uses a plain text file to hold its list of menu entries. The file is located at /usr/share/info/dir.
+#Unfortunately, due to occasional problems in the Makefiles of various packages, it can sometimes get out of sync with the info pages installed on the system.
+#If the /usr/share/info/dir file ever needs to be recreated, the following optional commands will accomplish the task:
+
+pushd /usr/share/info
+rm -v dir
+for f in *
+  do install-info $f dir 2>/dev/null
+done
+popd
+
+# The default location for configuration files to be installed is /etc/xdg, and the default locations for data files are /usr/local/share and /usr/share.
+#These locations can be extended with the environment variables XDG_CONFIG_DIRS and XDG_DATA_DIRS, respectively. The GNOME, KDE and XFCE environments respect these settings.
+# When a package installs a .desktop file to a location in one of the base data directories, the database that maps MIME-types to available applications can be updated.
+#For instance, the cache file at /usr/share/applications/mimeinfo.cache can be rebuilt by executing the following command as the root user:
+
+update-desktop-database /usr/share/applications

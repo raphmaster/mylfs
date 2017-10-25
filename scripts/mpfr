@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#version 3.1.5
+
+. $(dirname $_)/lib &&
+extract /sources $0 $2 &&
+./configure --prefix=/usr        \
+            --disable-static     \
+            --enable-thread-safe \
+            --docdir=/usr/share/doc/mpfr-3.1.5 &&
+make -j $3 &&
+make -j $3 html &&
+make -j $3 check &&
+make -j $3 install &&
+make -j $3 install-html &&
+remove /sources $0 $2

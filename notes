@@ -1,0 +1,11 @@
+fcron - delete /var/log/syslog every week
+kernel -> vmmouse protocol
+git - install package
+
+packages download urls file, packages dependencies file and scripts directory must be in alfs directory
+
+ One of the advantages of an LFS system is that there are no files that depend on the position of files on a disk system. Cloning an LFS build to another computer with the same architecture as the base system is as simple as using tar on the LFS partition that contains the root directory (about 250MB uncompressed for a base LFS build), copying that file via network transfer or CD-ROM to the new system and expanding it. From that point, a few configuration files will have to be changed. Configuration files that may need to be updated include: /etc/hosts, /etc/fstab, /etc/passwd, /etc/group, /etc/shadow, /etc/ld.so.conf, /etc/sysconfig/rc.site, /etc/sysconfig/network, and /etc/sysconfig/ifconfig.eth0.
+ 
+ A custom kernel may need to be built for the new system depending on differences in system hardware and the original kernel configuration
+ 
+There have been some reports of issues when copying between similar but not identical architectures. For instance, the instruction set for an Intel system is not identical with an AMD processor and later versions of some processors may have instructions that are unavailable in earlier versions. 

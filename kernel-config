@@ -1,0 +1,145 @@
+#iptables
+[*] Networking support  --->                                    [CONFIG_NET]
+      Networking Options  --->
+        [*] Network packet filtering framework (Netfilter) ---> [CONFIG_NETFILTER]
+        
+#lvm2
+#There are several other Device Mapper options in the kernel beyond those listed below. In order to get reasonable results if running the regression tests, all must be enabled either internally or as a module. 
+Device Drivers --->
+  [*] Multiple devices driver support (RAID and LVM) ---> [CONFIG_MD]
+    <*/M>   Device mapper support                         [CONFIG_BLK_DEV_DM]
+    <*/M/ >   Crypt target support                        [CONFIG_DM_CRYPT]
+    <*/M/ >   Snapshot target                             [CONFIG_DM_SNAPSHOT]
+    <*/M/ >   Thin provisioning target                    [CONFIG_DM_THIN_PROVISIONING]
+    <*/M/ >   Mirror target                               [CONFIG_DM_MIRROR]
+    
+#lm_sensors
+#Getting your kernel config right is an iterative process that may require that you recompile your kernel a couple of times. 
+#The simplest way to go about it is to start by enabling modules and then compile everything that may be needed by Lm Sensors as a module:
+#Recompile your kernel and reboot into the new kernel. Don't forget to make modules_install
+[*] Enable loadable module support  --->  [CONFIG_MODULES]
+
+Bus options (PCI etc.)  --->
+  [*] PCI support                         [CONFIG_PCI]
+
+Device Drivers  --->
+  I2C support --->
+    <*/M> I2C device interface            [CONFIG_I2C_CHARDEV]
+    I2C Hardware Bus support  --->
+      <M> (configure all of them as modules)
+  <*/M> Hardware Monitoring support  ---> [CONFIG_HWMON]
+    <M> (configure all of them as modules)
+    
+#pm-utils
+Power management and ACPI options --->
+    <*> Suspend to RAM and standby            [CONFIG_SUSPEND]
+    
+#libusb
+#To access raw USB devices (those not treated as a disk by the mass-storage driver), appropriate support must be available in the kernel. Check your kernel configuration:
+Device Drivers --->
+  [*] USB support --->                   [CONFIG_USB_SUPPORT]
+    <*/M> Support for Host-side USB      [CONFIG_USB]
+    (Select any USB hardware device drivers you may need on the same page)
+    
+#bridge-utils
+[*] Networking support --->            [CONFIG_NET]
+      Networking options --->
+        <*/M> 802.1d Ethernet Bridging [CONFIG_BRIDGE]
+        
+#wireless-tools
+#To use Wireless Tools, the kernel must have the appropriate drivers and other support available. The appropriate bus must also be available. 
+#For many laptops, the PCMCIA bus (CONFIG_PCCARD) needs to be built. In some cases, this bus support will also need to be built for embedded wireless cards. 
+#The appropriate bridge support also needs to be built. For many modern laptops, the CardBus host bridge (CONFIG_YENTA) will be needed.
+#In addition to the bus, the actual driver for the specific wireless card must also be available. There are many wireless cards and they don't all work with Linux. 
+#The first place to look for card support is the kernel. The drivers are located in Device Drivers → Network Device Support → Wireless LAN (non-hamradio). 
+#There are also external drivers available for some very common cards. For more information, look at the user notes.
+
+After the correct drivers are loaded, the interface will appear in /proc/net/wireless. 
+
+#alsa-lib
+Device Drivers --->
+  <*/m> Sound card support --->                  [CONFIG_SOUND]
+    <*/m> Advanced Linux Sound Architecture ---> [CONFIG_SND]
+            Select settings and drivers appropriate for your hardware.
+    < >   Open Sound System (DEPRECATED)         [CONFIG_SOUND_PRIME]
+    
+#cifs-utils
+File systems  --->
+  [*] Network File Systems  --->                                      [CONFIG_NETWORK_FILESYSTEMS]
+    <*/M> CIFS support (advanced network filesystem, SMBFS successor) [CONFIG_CIFS]
+    
+#wpa-supplicant
+[*] Networking support  --->                              [CONFIG_NET]
+  [*] Wireless  --->                                      [CONFIG_WIRELESS]
+    <*/M> cfg80211 - wireless configuration API           [CONFIG_CFG80211]
+    [*]     cfg80211 wireless extensions compatibility    [CONFIG_CFG80211_WEXT]
+    <*/M> Generic IEEE 802.11 Networking Stack (mac80211) [CONFIG_MAC80211]
+Device Drivers  --->
+  [*] Network device support  --->                        [CONFIG_NETDEVICES]
+    [*] Wireless LAN  --->                                [CONFIG_WLAN]
+    
+#libevdev
+Device Drivers  --->
+  Input device support --->
+    <*> Generic input layer (needed for...) [CONFIG_INPUT]
+    <*>   Event interface                   [CONFIG_INPUT_EVDEV]
+    [*]   Miscellaneous devices  --->       [CONFIG_INPUT_MISC]
+      <*>    User level driver support      [CONFIG_INPUT_UINPUT]
+
+#upower
+To use the command upower -w for information about processor wakeups (this command is used by gnome-power-manager) you need to enable CONFIG_TIMER_STATS. This is achieved in make menuconfig by going to the 'kernel-hacking' menu and selecting 'Collect kernel 
+timers statistics'.
+
+#vm mouse
+Processor type and features --->
+  [*] Symmetric multi-processing support          [CONFIG_SMP]
+  [*] Support for extended (non-PC) x86 platforms [CONFIG_X86_EXTENDED_PLATFORM]
+  [*] ScaleMP vSMP                                [CONFIG_X86_VSMP]
+Device Drivers --->
+  Input device support --->
+    [*] Mice --->                                 [CONFIG_INPUT_MOUSE]
+      <*/M> PS/2 mouse                            [CONFIG_MOUSE_PS2]
+      [*] Virtual mouse (vmmouse)                 [CONFIG_MOUSE_PS2_VMMOUSE]
+
+#xf86-video-ati
+Device Drivers  --->
+  Graphics support --->
+    Direct rendering Manager --->
+      <*> Direct Rendering Manager (XFree86 ... support) ---> [CONFIG_DRM]
+      <*> ATI Radeon                                          [CONFIG_DRM_RADEON]
+
+#xf86-video-intel
+Device Drivers  --->
+  Graphics support --->
+    Direct rendering Manager --->
+      <*> Direct Rendering Manager (XFree86 ... support) ---> [CONFIG_DRM]
+      <*> Intel 8xx/9xx/G3x/G4x/HD Graphics                   [CONFIG_DRM_I915]
+      [*]   Enable modesetting on intel by default            [CONFIG_DRM_I915_KMS]
+
+#xf86-video-nouveau
+Device Drivers  --->
+  Graphics support --->
+    Direct rendering Manager --->
+      <*> Direct Rendering Manager (XFree86 ... support) ---> [CONFIG_DRM]
+      <*> Nouveau (NVIDIA) cards                              [CONFIG_DRM_NOUVEAU]
+      [*]   Support for backlight control                     [CONFIG_DRM_NOUVEAU_BACKLIGHT]
+
+#xf86-video-vmware
+Device Drivers  --->
+  Graphics support  --->
+    Direct Rendering Manager  --->
+      <*> Direct Rendering Manager (XFree86 ... support) --->  [CONFIG_DRM]
+      <*> DRM driver for VMware Virtual GPU                    [CONFIG_DRM_VMWGFX]
+      [*]   Enable framebuffer console under vmwgfx by default [CONFIG_DRM_VMWGFX_FBCON]
+
+#qemu
+[*] Virtualization:  --->                            [CONFIG_VIRTUALIZATION]
+  <*/M>   Kernel-based Virtual Machine (KVM) support [CONFIG_KVM]
+    <*/M>     KVM for Intel processors support         [CONFIG_KVM_INTEL]
+      <*/M>     KVM for AMD processors support           [CONFIG_KVM_AMD]
+[*] Networking support  --->                         [CONFIG_NET]
+  Networking options  --->
+      <*/M> 802.1d Ethernet Bridging                   [CONFIG_BRIDGE]
+      Device Drivers  --->
+        [*] Network device support  --->                   [CONFIG_NETDEVICES]
+            <*/M>    Universal TUN/TAP device driver support [CONFIG_TUN]

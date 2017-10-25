@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#version 2.29.1
+
+. $(dirname $_)/lib &&
+extract ${1}sources $0 $2 &&
+./configure --prefix=/tools                \
+            --without-python               \
+            --disable-makeinstall-chown    \
+            --without-systemdsystemunitdir \
+            PKG_CONFIG="" &&
+make -j $3 &&
+make -j $3 install &&
+remove ${1}sources $0 $2

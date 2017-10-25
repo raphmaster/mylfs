@@ -1,0 +1,101 @@
+#!/bin/bash
+
+#version 6.3.0
+
+. $(dirname $_)/lib &&
+extract ${1}sources $0 $2 &&
+if [ $4 -eq 2 ]; then cat gcc/limitx.h gcc/glimits.h gcc/limity.h > $(dirname $(${LFS_TGT}-gcc -print-libgcc-file-name))/include-fixed/limits.h; fi &&
+if [ $# -eq 3 || $4 -eq 1 || $4 -eq 2 ]; then
+tar -xvf ../$(findArchive mpfr $2) &&
+mv -v $(archiveDirectory ${1}sources mpfr $2) mpfr &&
+tar -xvf ../$(findArchive gmp $2) &&
+mv -v $(archiveDirectory ${1}sources gmp $2) gmp &&
+tar -xvf ../$(findArchive mpc $2) &&
+mv -v $(archiveDirectory ${1}sources mpc $2) mpc &&
+for file in gcc/config/{linux,i386/linux{,64}}.h
+do
+	sed -i -e "s@/lib\(64\)\?\(32\)\?/ld@/tools&@g" -e "s@/usr@/tools@g" $file &&
+	echo "
+#undef STANDARD_STARTFILE_PREFIX_1
+#undef STANDARD_STARTFILE_PREFIX_2
+#define STANDARD_STARTFILE_PREFIX_1 "/tools/lib/"
+#define STANDARD_STARTFILE_PREFIX_2 """ >> $file || exit 1
+done; fi &&
+sed -i -e '/m64=/s/lib64/lib/' gcc/config/i386/t-linux64 &&
+mkdir -v build &&
+pushd build &&
+if [ $# -eq 3 || $4 -eq 1 ]; then
+../configure                                       \
+    --target=$LFS_TGT                              \
+    --prefix=/tools                                \
+    --with-glibc-version=2.11                      \
+    --with-sysroot=$1                            \
+    --with-newlib                                  \
+    --without-headers                              \
+    --with-local-prefix=/tools                     \
+    --with-native-system-header-dir=/tools/include \
+    --disable-nls                                  \
+    --disable-shared                               \
+    --disable-multilib                             \
+    --disable-decimal-float                        \
+    --disable-threads                              \
+    --disable-libatomic                            \
+    --disable-libgomp                              \
+    --disable-libmpx                               \
+    --disable-libquadmath                          \
+    --disable-libssp                               \
+    --disable-libvtv                               \
+    --disable-libstdcxx                            \
+    --enable-languages=c,c++
+elif [ $4 -eq 2 ]; then
+CC=${LFS_TGT}-gcc                                    \
+CXX=${LFS_TGT}-g++                                   \
+AR=${LFS_TGT}-ar                                     \
+RANLIB=${LFS_TGT}-ranlib                             \
+../configure                                       \
+    --prefix=/tools                                \
+    --with-local-prefix=/tools                     \
+    --with-native-system-header-dir=/tools/include \
+    --enable-languages=c,c++                       \
+    --disable-libstdcxx-pch                        \
+    --disable-multilib                             \
+    --disable-bootstrap                            \
+    --disable-libgomp
+elif [ $4 -eq 3 ]; then
+SED=sed                               \
+../configure --prefix=/usr            \
+             --enable-languages=c,c++ \
+             --disable-multilib       \
+             --disable-bootstrap      \
+             --with-system-zlib
+fi &&
+make -j $3 &&
+if [ $4 -eq 3 ]; then
+ulimit -s 32768 &&
+make -j $3 -k check
+fi &&
+make -j $3 install &&
+if [ $4 -eq 2 ]; then
+	ln -sv gcc /tools/bin/cc &&
+	echo 'int main(){}' > dummy.c &&
+	cc dummy.c &&
+	if [[ ! $(readelf -l a.out | grep ': /tools') =~ /tools/lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'Toolchain is not working as expected!'; exit 1; fi &&
+	rm -v dummy.c a.out
+elif [ $4 -eq 3 ]; then
+ln -sv /usr/bin/cpp /lib &&
+ln -sv gcc /usr/bin/cc &&
+install -v -dm755 /usr/lib/bfd-plugins &&
+ln -sfv /usr/libexec/gcc/$(gcc -dumpmachine)/6.3.0/liblto_plugin.so /usr/lib/bfd-plugins/ &&
+echo 'int main(){}' > dummy.c &&
+cc dummy.c -v -Wl,--verbose &> dummy.log &&
+if [[ ! $(readelf -l a.out | grep ': /lib') =~ /lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'Toolchain is not working as expected!'; exit 1; fi &&
+if [[ ! $(grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log) =~ /usr/lib64.*/crt1\.o\ succeeded[[:space:]]/usr/lib64.*/crti\.o\ succeeded[[:space:]]/usr/lib64.*/crtn\.o\ succeeded ]]; then echo 'Incorrect start files!'; exit 1; fi &&
+if [[ ! $(grep -B4 '^ /usr/include' dummy.log) =~ \#include\ \<\.\.\.\>\ search\ starts\ here:[[:space:]]*/usr/lib64/gcc/x86_64-pc-linux-gnu/6\.3\.0/include[[:space:]]*/usr/local/include[[:space:]]*/usr/lib64/gcc/x86_64-pc-linux-gnu/6\.3\.0/include-fixed[[:space:]]*/usr/include ]]; then echo 'Incorrect compiler header files!'; exit 1; fi &&
+if [[ ! $(grep 'SEARCH.*/usr/lib' dummy.log | sed 's|; |\n|g') =~ SEARCH_DIR\(\"/usr/x86_64-pc-linux-gnu/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/local/lib64\"\)[[:space:]]SEARCH_DIR\(\"/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/x86_64-pc-linux-gnu/lib\"\)[[:space:]]SEARCH_DIR\(\"/usr/local/lib\"\)[[:space:]]SEARCH_DIR\(\"/lib\"\)[[:space:]]SEARCH_DIR\(\"/usr/lib\"\)\; ]]; then echo 'Incorrect linker search paths!'; exit 1; fi &&
+if [[ ! $(grep "/lib.*/libc.so.6 " dummy.log) =~ attempt\ to\ open\ /lib64/libc\.so\.6\ succeeded ]]; then echo 'Incorrect libc!'; exit 1; fi &&
+if [[ ! $(grep found dummy.log) =~ found\ ld-linux-x86-64\.so\.2\ at\ /lib/ld-linux-x86-64\.so\.2 ]]; then echo 'Incorrect GCC dynamic linker!'; exit 1; fi &&
+rm -v dummy.c a.out dummy.log &&
+mkdir -pv /usr/share/gdb/auto-load/usr/lib &&
+mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
+fi &&
+remove ${1}sources $0 $2

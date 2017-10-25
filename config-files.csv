@@ -1,0 +1,50 @@
+localedef,compile locale definition table Ex: localedef -i en_CA -f UTF-8 en_CA.UTF-8
+iptables,firewall rules utility
+/etc/timezone,select timezone in /usr/share/zoneinfo and copy to /etc/localtime Ex: tzselect to help select timezone
+/etc/passwd,user account information
+/etc/hosts,static table lookup for hostnames
+/etc/group,groups and users associated to
+/etc/ld.so.conf,dynamic loader configuration (shared libs)
+/etc/issue,logon message
+/etc/issue.net,ssh logon message
+/etc/resolv.conf,domain name server configuration
+/etc/hostname,computer name
+/etc/lsb-release,linux standard base system status
+/etc/screenrc,global screen configuration file
+/etc/gpm-root.conf,default gpm-root configuration file
+/etc/dhcpcd.conf,dhcpcd configuration file
+/etc/asound.conf,alsa sound system configuration
+/etc/login.defs,login configuration file
+/etc/sudoers,sudo security policies
+/etc/fcron.*,fcron configuration files
+/etc/sensors3.conf,lm sensors configuration file
+/etc/ntp.conf,network time protocol daemon config file
+/etc/rsyncd.conf,rsync daemon configuration file
+/etc/sysconfig/rc.site,general rc scripts configuration
+/etc/sysconfig/network,network rc script configuration
+/etc/sysconfig/ifconfig.*,network card interface configuration
+/etc/sysconfig/mouse,gpm mouse configuration
+/etc/sysconfig/wpa_supplicant-*.conf,wpa supplicant access points configuration
+/etc/security/*,pluggable authentication modules configuration files
+/etc/profile.d/i18n.sh,bash locale settings
+/etc/pam.d/*,pluggable authentication modules
+/etc/udev/rules.d/*,udev devices renaming rules
+/etc/mail/*,sendmail configuration file
+/etc/mail/local-host-names,sendmail local hostname
+/etc/pm/sleep.d/*,scripts to be run on suspend or resume
+/etc/skel/*,files to be copied to home directory when creating a new user
+/etc/rc.d/rc.iptables,iptables startup firewall rules script
+/etc/unixODBC/*,unix odbc configuration files
+/etc/acpi/events/*,acpid event configuration files
+/etc/lynx/lynx.cfg,lynx configuration file
+/etc/sane.d/*.conf,sane backends configuration files
+/etc/ssh/ssh_config,ssh client configuration
+/etc/ssh/sshd_config,sshd daemon (server) configuration
+/etc/default/useradd,shadow useradd configuration file
+/etc/openldap/*,openldap daemon configuration files
+/etc/samba/smb.conf,samba server configuration file
+/etc/fonts/*,fontconfig configuration files
+/etc/gtk-2.0/gtkrc,Gtk+-2 system wide configuration
+/etc/gtk-3.0/settings.ini,Gtk+-3 system wide configuration
+/lib/dhcpcd/dhcpcd-hooks/*,dhcpcd hooks scripts
+~/.face,face in lxdm greeting screen

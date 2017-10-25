@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#version 3.0.4
+
+. $(dirname $_)/lib &&
+extract ${1}sources $0 $2 &&
+./configure --prefix=/tools &&
+make -j $3 &&
+make -j $3 install &&
+remove ${1}sources $0 $2

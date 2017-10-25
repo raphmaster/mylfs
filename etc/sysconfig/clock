@@ -1,0 +1,8 @@
+#Set UTC to 1 if your hardware clock is set to UTC.
+#Check with the following command as root : hwclock --localtime --show
+#If the time matches yours, the hardware clock is UTC, otherwise it is the localtime.
+UTC=1
+
+# Set this to any options you might need to give to hwclock,
+# such as machine hardware clock type for Alphas.
+CLOCKPARAMS=
