@@ -1,6 +1,7 @@
 fcron - delete /var/log/syslog every week
 kernel -> vmmouse protocol
 git - install package
+dhex -> hex editor based on ncurses
 
 packages download urls file, packages dependencies file and scripts directory must be in alfs directory
 
