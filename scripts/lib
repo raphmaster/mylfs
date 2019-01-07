@@ -1,9 +1,9 @@
 #!/bin/bash
 
-#CSV file column count
+#CSV file l count
 #Parameter 1: CSV file
 #Output: Number of columns
-function columnCount
+function column_count
 {
         local columns=0
         local x=0

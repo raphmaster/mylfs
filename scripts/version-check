@@ -1,0 +1,65 @@
+#!/bin/bash
+
+#minimum software check
+#version-8.3
+
+echo 'bash version >= 3.2'
+bash --version | head -n 1 | cut -d " " -f 2-4
+echo '/bin/sh must link to bash'
+echo "/bin/sh -> $(readlink -e /bin/sh)"
+echo 'binutils version >= 2.25'
+echo -n "binutils: "; ld --version | head -n1 | cut -d" " -f3-
+echo 'bison version >= 2.7'
+bison --version | head -n1
+echo '/usr/bin/yacc must link to bison'
+echo "/usr/bin/yacc -> $(readlink -e /usr/bin/yacc)"
+echo 'bzip2 version >= 1.0.4'
+bzip2 --version 2>&1 < /dev/null | head -n1 | cut -d" " -f1,6-
+echo 'coreutils version >= 6.9'
+echo -n "Coreutils: "; chown --version | head -n1 | cut -d")" -f2
+echo 'diffutils version >= 2.8.1'
+diff --version | head -n1
+echo 'findutils version >= 4.2.31'
+find --version | head -n1
+echo 'gawk version >= 4.0.1'
+gawk --version | head -n1
+echo '/usr/bin/awk must link to gawk'
+echo "/usr/bin/awk -> $(readlink -e /usr/bin/awk)"
+echo 'gcc version >= 4.9'
+gcc --version | head -n1
+echo 'g++ version >= 4.9'
+g++ --version | head -n1
+echo 'glibc version >= 2.11'
+ldd --version | head -n1 | cut -d" " -f2-
+echo 'grep version >= 2.5.1a'
+grep --version | head -n1
+echo 'gzip version >= 1.3.12'
+gzip --version | head -n1
+echo 'linux kernel version >= 3.2'
+cat /proc/version
+echo 'm4 version >= 1.4.10'
+m4 --version | head -n1
+echo 'make version >= 4.0'
+make --version | head -n1
+echo 'patch version >= 2.5.4'
+patch --version | head -n1
+echo 'perl version >= 5.8.8'
+echo "perl $(perl -V:version)"
+echo 'sed version >= 4.1.5'
+sed --version | head -n1
+echo 'tar version >= 1.22'
+tar --version | head -n1
+echo 'texinfo version >= 4.7'
+makeinfo --version | head -n1
+echo 'xz version >= 5.0.0'
+xz --version | head -n1
+echo 'int main(){}' > dummy.c && g++ -o dummy dummy.c
+if [ -x dummy ]; then
+    echo "g++ compilation OK"
+else
+    echo "g++ compilation failed"
+fi
+rm -f dummy.c dummy
+read -p 'is all above informations correct? (y/n) ' result
+if [ $result == 'y' ]; then exit 0; #version check success
+else exit 1; fi #version check failed
