@@ -5,15 +5,18 @@ USAGE: alfs wdir deps packs procs [start]
 DESCRIPTION:
 alfs is a tool to automate the build of packages.
 based on a csv dependencies file, alfs execute package scripts to build dependencies.
+all package scripts must be placed in the same directory as this script.
 in the dependencies file, all package scripts on one line must be successfully executed before executing scripts of the next line.
 each package name in dependencies file must match the name of an executable script in the same directory of alfs script.
 the package names in dependencies file must follow this uasge: [#]package[#param]...
 a # character can be inserted at the beginning of the package name in dependencies file to indicate that the script must be executed in the current shell context, otherwise script are executed in a separate shell context.
 many others # can be inserted after the package name to pass parameters to the package script.
+the package urls file caintains urls to download package from.
+in this file, each line must contain the package name followed by a tab character and the download url: package<tab>url...
 
 PARAMETERS:
 wdir: the working directory where all packages will be built
 deps: the comma-separated-value file that list all packages dependencies and build order
-packs: the package urls file. this file contains all the url of the packages that need to be downloaded. each line must contain the package name followed by a tab character and the download url.
+packs: the file that contains urls to download packages.
 procs: the number of maximum processors to use
 [start]: the optional starting package in dependencies file

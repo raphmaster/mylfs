@@ -1,4 +1,6 @@
 #!/bin/bash
 
-if [[ $(echo -e 'test:-#/hello\n <...> world"(;') =~ test:-\#/hello.*\<\.\.\.\>\ world\"\(\; ]]; then echo 'MATCH'; fi &&
-echo 'the end!'
+# testing purpose only
+
+sdir=$(pwd)/$(dirname $_)/ &&
+echo $sdir

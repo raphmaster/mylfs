@@ -58,3 +58,12 @@ function remove
 	dirs -c &&
 	rm -rvf ${1}/$(archiveDirectory $1 $2 $3)
 }
+
+#testing purpose only
+function hello
+{
+    echo 'hello world!'
+}
+
+#export functions to subshells
+export -f extract remove hello

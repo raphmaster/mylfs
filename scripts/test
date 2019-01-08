@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#testing purpose only
+
+echo "script name: $0
+sdir: $sdir
+wdir: $wdir
+deps: $deps
+packs: $packs
+procs: $procs
+arg1: $1" &&
+hello &&
+echo 'test script success' &&
+env &&
+unset $(env | cut -d '=' -f 1 | sed '/^PATH$/d;/^BASH_FUNC/d;/^}$/d') &&
+env

@@ -1,21 +1,22 @@
 #!/bin/bash
 
-if [ $# -eq 3 || $4 -eq 1 ]; then #first pass
+if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
     #create tools directory for building temporary system
-    sudo mkdir -v ${1}tools &&
-    sudo ln -sv ${1}tools /tools &&
-    sudo chown -Rv $(id -un): ${1}tools &&
-    chmod -Rv 755 ${1}tools
+    sudo mkdir -v ${wdir}tools &&
+    sudo ln -sv ${wdir}tools /tools &&
+    sudo chown -Rv $(id -un): ${wdir}tools &&
+    chmod -Rv 755 ${wdir}tools
 fi &&
 #Create new environment
-unset $(env | cut -d '=' -f 1 | sed '/^HOME$/d;/^TERM$/d;/^PS1$/d;/^_$/d;/^SHLVL$/d;/^PWD$/d;/^PATH$/d;/^LC_ALL$/d;/^start$/d;/^wdir$/d;/^csv$/d;/^urls$/d;/^line$/d;/^package$/d;/^cmd$/d') &&
+#unset names that are not needed from environment
+unset $(env | cut -d '=' -f 1 | sed '/^HOME$/d;/^TERM$/d;/^PS1$/d;/^_$/d;/^SHLVL$/d;/^PWD$/d;/^PATH$/d;/^LC_ALL$/d;/^start$/d;/^wdir$/d;/^deps$/d;/^packs$/d;/^line$/d;/^package$/d;/^cmd$/d;/^sdir$/d;/^procs$/d;/^BASH_FUNC/d;/^}$/d') &&
 #Shell will always search in PATH when a program is to be run
 set +h &&
 #Change prompt
 PS1='\u:\w\$ ' &&
 #Control localization of certain program
 LC_ALL=POSIX &&
-if [ $# -eq 3 || $4 -eq 1 ]; then #first pass
+if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
     #Ensure newly created files and directories are only writable by their owner, but readable and executable by anyone
     umask 022 &&
     #Machine description when compiling
@@ -24,7 +25,7 @@ if [ $# -eq 3 || $4 -eq 1 ]; then #first pass
     PATH=/tools/bin:/bin:/usr/bin &&
     #Make environment variable to be passed to child processes
     export LC_ALL LFS_TGT PATH
-elif [ $4 -eq 2 ]; then #second pass
+elif [ $1 -eq 2 ]; then #second pass
     HOME=/root &&
     TERM=xterm &&
     PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin &&
