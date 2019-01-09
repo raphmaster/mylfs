@@ -1,87 +1,79 @@
 #!/bin/bash
 
-#version 2.25
+#version 2.28
 
-. $(dirname $_)/lib &&
-extract ${1}sources $0 $2 &&
-if [ $4 -eq 2 ]; then
-patch -Np1 -i ../glibc-2.25-fhs-1.patch &&
-ln -sv /lib/ld-linux-x86-64.so.2 /lib64 &&
-ln -sv /lib/ld-linux-x86-64.so.2 /lib64/ld-lsb-x86-64.so.3
+extract $0 &&
+if [ $1 -eq 2 ]; then #second pass
+    patch -Np1 -i ../glibc-2.25-fhs-1.patch &&
+    ln -sv /lib/ld-linux-x86-64.so.2 /lib64 &&
+    ln -sv /lib/ld-linux-x86-64.so.2 /lib64/ld-lsb-x86-64.so.3
 fi &&
 mkdir -v build &&
 pushd build &&
-if [ $# -eq 3 || $4 -eq 1 ]; then
-../configure                             \
-      --prefix=/tools                    \
-      --host=$LFS_TGT                    \
-      --build=$(../scripts/config.guess) \
-      --enable-kernel=2.6.32             \
-      --with-headers=/tools/include      \
-      libc_cv_forced_unwind=yes          \
-      libc_cv_c_cleanup=yes
-elif [ $4 -eq 2 ]; then
-../configure --prefix=/usr                   \
+if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
+    ../configure --prefix=/tools --host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=3.2 --with-headers=/tools/include libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes
+elif [ $1 -eq 2 ]; then #second pass
+    ../configure --prefix=/usr                   \
              --enable-kernel=2.6.32          \
              --enable-obsolete-rpc           \
              --enable-stack-protector=strong \
              libc_cv_slibdir=/lib
 fi &&
-make -j $3 &&
-if [ $4 -eq 2 ]; then
-make -j $3 check &&
-touch /etc/ld.so.conf
+make -j $procs &&
+if [ $1 -eq 2 ]; then #second pass
+    make -j $3 check &&
+    touch /etc/ld.so.conf
 fi &&
-make -j $3 install &&
-if [ $# -eq 3 || $4 -eq 1 ]; then
-echo 'int main(){}' > dummy.c &&
-${LFS_TGT}-gcc dummy.c &&
-if [[ ! $(readelf -l a.out | grep ': /tools') =~ /tools/lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'Toolchain is not working as expected!'; exit 1; fi &&
-rm -vf dummy.c a.out
-elif [ $4 -eq 2 ]; then
-cp -v ../nscd/nscd.conf /etc/nscd.conf &&
-mkdir -pv /var/cache/nscd &&
-mkdir -pv /usr/lib/locale &&
-localedef -i cs_CZ -f UTF-8 cs_CZ.UTF-8 &&
-localedef -i de_DE -f ISO-8859-1 de_DE &&
-localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro &&
-localedef -i de_DE -f UTF-8 de_DE.UTF-8 &&
-localedef -i en_GB -f UTF-8 en_GB.UTF-8 &&
-localedef -i en_HK -f ISO-8859-1 en_HK &&
-localedef -i en_PH -f ISO-8859-1 en_PH &&
-localedef -i en_US -f ISO-8859-1 en_US &&
-localedef -i en_US -f UTF-8 en_US.UTF-8 &&
-localedef -i es_MX -f ISO-8859-1 es_MX &&
-localedef -i fa_IR -f UTF-8 fa_IR &&
-localedef -i fr_FR -f ISO-8859-1 fr_FR &&
-localedef -i fr_FR@euro -f ISO-8859-15 fr_FR@euro &&
-localedef -i fr_FR -f UTF-8 fr_FR.UTF-8 &&
-localedef -i it_IT -f ISO-8859-1 it_IT &&
-localedef -i it_IT -f UTF-8 it_IT.UTF-8 &&
-localedef -i ja_JP -f EUC-JP ja_JP &&
-localedef -i ru_RU -f KOI8-R ru_RU.KOI8-R &&
-localedef -i ru_RU -f UTF-8 ru_RU.UTF-8 &&
-localedef -i tr_TR -f UTF-8 tr_TR.UTF-8 &&
-localedef -i zh_CN -f GB18030 zh_CN.GB18030 &&
-localedef -i en_CA -f UTF-8 en_CA.UTF-8 &&
-localedef -i en_CA -f ISO-8859-1 en_CA &&
-localedef -i fr_CA -f UTF-8 fr_CA.UTF-8 &&
-localedef -i fr_CA -f ISO-8859-1 fr_CA &&
-cp -v /alfs/etc/nsswitch.conf /etc/nsswitch.conf &&
-tar -xvf /sources/$(findArchive tzdata $2) &&
-ZONEINFO=/usr/share/zoneinfo &&
-mkdir -pv ${ZONEINFO}/{posix,right} &&
-for tz in etcetera southamerica northamerica europe africa antarctica asia australasia backward pacificnew systemv
-do
-    zic -L /dev/null   -d $ZONEINFO       -y "sh yearistype.sh" ${tz} &&
-    zic -L /dev/null   -d ${ZONEINFO}/posix -y "sh yearistype.sh" ${tz} &&
-    zic -L leapseconds -d ${ZONEINFO}/right -y "sh yearistype.sh" ${tz} || exit 1
-done &&
-cp -v zone.tab zone1970.tab iso3166.tab $ZONEINFO &&
-zic -d $ZONEINFO -p America/New_York &&
-unset ZONEINFO &&
-cp -v /usr/share/zoneinfo/America/Montreal /etc/localtime &&
-cp -v /alfs/etc/ld.so.conf /etc/ld.so.conf &&
-mkdir -pv /etc/ld.so.conf.d
+make -j $procs install &&
+if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
+    echo 'int main(){}' > dummy.c &&
+    ${LFS_TGT}-gcc dummy.c &&
+    if [[ ! $(readelf -l a.out | grep ': /tools') =~ /tools/lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'Toolchain is not working as expected!'; exit 1; fi &&
+    rm -vf dummy.c a.out
+elif [ $1 -eq 2 ]; then #second pass
+    cp -v ../nscd/nscd.conf /etc/nscd.conf &&
+    mkdir -pv /var/cache/nscd &&
+    mkdir -pv /usr/lib/locale &&
+    localedef -i cs_CZ -f UTF-8 cs_CZ.UTF-8 &&
+    localedef -i de_DE -f ISO-8859-1 de_DE &&
+    localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro &&
+    localedef -i de_DE -f UTF-8 de_DE.UTF-8 &&
+    localedef -i en_GB -f UTF-8 en_GB.UTF-8 &&
+    localedef -i en_HK -f ISO-8859-1 en_HK &&
+    localedef -i en_PH -f ISO-8859-1 en_PH &&
+    localedef -i en_US -f ISO-8859-1 en_US &&
+    localedef -i en_US -f UTF-8 en_US.UTF-8 &&
+    localedef -i es_MX -f ISO-8859-1 es_MX &&
+    localedef -i fa_IR -f UTF-8 fa_IR &&
+    localedef -i fr_FR -f ISO-8859-1 fr_FR &&
+    localedef -i fr_FR@euro -f ISO-8859-15 fr_FR@euro &&
+    localedef -i fr_FR -f UTF-8 fr_FR.UTF-8 &&
+    localedef -i it_IT -f ISO-8859-1 it_IT &&
+    localedef -i it_IT -f UTF-8 it_IT.UTF-8 &&
+    localedef -i ja_JP -f EUC-JP ja_JP &&
+    localedef -i ru_RU -f KOI8-R ru_RU.KOI8-R &&
+    localedef -i ru_RU -f UTF-8 ru_RU.UTF-8 &&
+    localedef -i tr_TR -f UTF-8 tr_TR.UTF-8 &&
+    localedef -i zh_CN -f GB18030 zh_CN.GB18030 &&
+    localedef -i en_CA -f UTF-8 en_CA.UTF-8 &&
+    localedef -i en_CA -f ISO-8859-1 en_CA &&
+    localedef -i fr_CA -f UTF-8 fr_CA.UTF-8 &&
+    localedef -i fr_CA -f ISO-8859-1 fr_CA &&
+    cp -v /alfs/etc/nsswitch.conf /etc/nsswitch.conf &&
+    tar -xvf /sources/$(findArchive tzdata $2) &&
+    ZONEINFO=/usr/share/zoneinfo &&
+    mkdir -pv ${ZONEINFO}/{posix,right} &&
+    for tz in etcetera southamerica northamerica europe africa antarctica asia australasia backward pacificnew systemv
+    do
+	zic -L /dev/null   -d $ZONEINFO       -y "sh yearistype.sh" ${tz} &&
+        zic -L /dev/null   -d ${ZONEINFO}/posix -y "sh yearistype.sh" ${tz} &&
+        zic -L leapseconds -d ${ZONEINFO}/right -y "sh yearistype.sh" ${tz} || exit 1
+    done &&
+    cp -v zone.tab zone1970.tab iso3166.tab $ZONEINFO &&
+    zic -d $ZONEINFO -p America/New_York &&
+    unset ZONEINFO &&
+    cp -v /usr/share/zoneinfo/America/Montreal /etc/localtime &&
+    cp -v /alfs/etc/ld.so.conf /etc/ld.so.conf &&
+    mkdir -pv /etc/ld.so.conf.d
 fi &&
-remove ${1}sources $0 $2
+remove $0

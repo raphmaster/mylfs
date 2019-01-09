@@ -1,31 +1,20 @@
 #!/bin/bash
 
-#version 2.27
+#version 2.31.1
 
-. $(dirname $_)/lib &&
-extract ${1}sources $0 $2 &&
+extract $0 &&
 mkdir -v build &&
 pushd build &&
-if [ $# -eq 3 || $4 -eq 1 ]; then
-../configure --prefix=/tools            \
-    --with-sysroot=$1        \
-    --with-lib-path=/tools/lib \
-    --target=$LFS_TGT          \
-    --disable-nls              \
-    --disable-werror
-elif [ $4 -eq 2 ]; then
-CC=${LFS_TGT}-gcc                \
-AR=${LFS_TGT}-ar                 \
-RANLIB=${LFS_TGT}-ranlib         \
-../configure                   \
-    --prefix=/tools            \
-    --disable-nls              \
-    --disable-werror           \
-    --with-lib-path=/tools/lib \
-    --with-sysroot
-elif [ $4 -eq 3 ]; then
-if [[ ! $(expect -c "spawn ls") =~ spawn\ ls ]]; then echo 'Environment is not set up for proper PTY operation!'; exit 1; fi &&
-../configure --prefix=/usr       \
+if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
+    ../configure --prefix=/tools --with-sysroot=$wdir --with-lib-path=/tools/lib --target=$LFS_TGT --disable-nls --disable-werror
+elif [ $1 -eq 2 ]; then #second pass
+    CC=${LFS_TGT}-gcc &&
+    AR=${LFS_TGT}-ar &&
+    RANLIB=${LFS_TGT}-ranlib &&
+    ../configure --prefix=/tools --disable-nls --disable-werror --with-lib-path=/tools/lib --with-sysroot
+elif [ $1 -eq 3 ]; then #third pass
+    if [[ ! $(expect -c "spawn ls") =~ spawn\ ls ]]; then echo 'Environment is not set up for proper PTY operation!'; exit 1; fi &&
+    ../configure --prefix=/usr       \
              --enable-gold       \
              --enable-ld=default \
              --enable-plugins    \
@@ -33,17 +22,20 @@ if [[ ! $(expect -c "spawn ls") =~ spawn\ ls ]]; then echo 'Environment is not s
              --disable-werror    \
              --with-system-zlib
 fi &&
-if [ $# -eq 3 || $4 -eq 1 || $4 -eq 2 ]; then make -j $3
-elif [ $4 -eq 3 ]; then make -j $3 tooldir=/usr; fi &&
-if [ $# -eq 3 || $4 -eq 1 ]; then
-mkdir -pv /tools/lib &&
-ln -sv lib /tools/lib64
+if [ $# -eq 0 || $1 -eq 1 || $1 -eq 2 ]; then make -j $procs #first/second pass
+elif [ $1 -eq 3 ]; then make -j $procs tooldir=/usr; fi && #third pass
+if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
+    mkdir -v /tools/lib &&
+    ln -sv lib /tools/lib64
 fi &&
-if [ $# -eq 3 || $4 -eq 1 || $4 -eq 2 ]; then make -j $3 install
-elif [ $4 -eq 3 ]; then make -j $3 -k check && make -j $3 tooldir=/usr install; fi &&
-if [ $4 -eq 2 ]; then
-make -C ld clean
-make -C ld LIB_PATH=/usr/lib:/lib
-cp -v ld/ld-new /tools/bin
+if [ $# -eq 0 || $1 -eq 1 || $1 -eq 2 ]; then make -j $procs install #first/second pass
+elif [ $1 -eq 3 ]; then #third pass
+    make -j $procs -k check &&
+    make -j $procs tooldir=/usr install
 fi &&
-remove ${1}sources $0 $2
+if [ $1 -eq 2 ]; then #second pass
+    make -C ld clean &&
+    make -C ld LIB_PATH=/usr/lib:/lib &&
+    cp -v ld/ld-new /tools/bin
+fi &&
+remove $0

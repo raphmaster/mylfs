@@ -2,24 +2,23 @@
 
 #version 1.0.6
 
-. $(dirname $_)/lib &&
-extract ${1}sources $0 $2 &&
-if [ $4 -eq 2 ]; then
-patch -Np1 -i ../bzip2-1.0.6-install_docs-1.patch &&
-sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile &&
-sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile &&
-make -j $3 -f Makefile-libbz2_so &&
-make -j $3 clean
+extract $0 &&
+if [ $1 -eq 2 ]; then #second pass
+    patch -Np1 -i ../bzip2-1.0.6-install_docs-1.patch &&
+    sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile &&
+    sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile &&
+    make -j $3 -f Makefile-libbz2_so &&
+    make -j $3 clean
 fi &&
-make -j $3 &&
-if [ $# -eq 3 || $4 -eq 1 ]; then make -j $3 PREFIX=/tools install
-elif [ $4 -eq 2 ]; then
-make -j $3 PREFIX=/usr install &&
-cp -v bzip2-shared /bin/bzip2 &&
-cp -av libbz2.so* /lib &&
-ln -sv /lib/libbz2.so.1.0 /usr/lib/libbz2.so &&
-rm -v /usr/bin/{bunzip2,bzcat,bzip2} &&
-ln -sv bzip2 /bin/bunzip2 &&
-ln -sv bzip2 /bin/bzcat
+make -j $procs &&
+if [ $# -eq 0 || $1 -eq 1 ]; then make -j $procs PREFIX=/tools install #first pass
+elif [ $1 -eq 2 ]; then #second pass
+    make -j $procs PREFIX=/usr install &&
+    cp -v bzip2-shared /bin/bzip2 &&
+    cp -av libbz2.so* /lib &&
+    ln -sv /lib/libbz2.so.1.0 /usr/lib/libbz2.so &&
+    rm -v /usr/bin/{bunzip2,bzcat,bzip2} &&
+    ln -sv bzip2 /bin/bunzip2 &&
+    ln -sv bzip2 /bin/bzcat
 fi &&
-remove ${1}sources $0 $2
+remove $0

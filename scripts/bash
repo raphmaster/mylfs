@@ -1,11 +1,10 @@
 #!/bin/bash
 
-#version 4.4
+#version 4.4.18
 
-. $(dirname $_)/lib &&
-extract ${1}sources $0 $2 &&
+extract $0 &&
 ./configure --prefix=/tools --without-bash-malloc &&
-make -j $3 &&
-make -j $3 install &&
+make -j $procs &&
+make -j $procs install &&
 ln -sv bash /tools/bin/sh &&
-remove ${1}sources $0 $2
+remove $0

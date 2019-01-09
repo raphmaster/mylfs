@@ -1,10 +1,9 @@
 #!/bin/bash
 
-#version 2.7.5
+#version 2.7.6
 
-. $(dirname $_)/lib &&
-extract ${1}sources $0 $2 &&
+extract $0 &&
 ./configure --prefix=/tools &&
-make -j $3 &&
-make -j $3 install &&
-remove ${1}sources $0 $2
+make -j $procs &&
+make -j $procs install &&
+remove $0

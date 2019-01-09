@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#TO BE REMOVED, NO LONGER REQUIRED
 #CSV file l count
 #Parameter 1: CSV file
 #Output: Number of columns
@@ -17,53 +18,46 @@ function column_count
         echo $columns
 }
 
-#Find archive name from package name
-#Parameter 1: Package name
-#Parameter 2: Absolute path to packages URLs file
-#Output: Archive name
-function findArchive
+#find archive name from package name in package download urls file
+#arg1: package name
+#output: archive name
+function find_archive
 {
-	grep "^$1" $2 | cut -f 2 | rev | cut -d '/' -f 1 | rev
+	grep "^$1" $packs | cut -f 2 | rev | cut -d '/' -f 1 | rev
 }
 
-#Find archive root directory name
-#Parameter 1: Absolute path to directory where we can find the package
-#Parameter 2: Package name
-#Parameter 3: Absolute path to packages URLs file
-function archiveDirectory
+#find tar archive root directory name from package name in sources working directory
+#arg1: package name
+#output: archive root directory
+function tar_root
 {
-	tar -tf ${1}/$(findArchive $2 $3) | sed '1q;d' | cut -d '/' -f 1
+	tar -tf ${wdir}sources/$(find_archive $1) | sed '1q;d' | cut -d '/' -f 1
 }
 
-#cd to directory where is the package, decompress, untar package and cd to root directory of the archive
-#Parameter 1: Absolute path to directory where we can find the package
-#Parameter 2: Package to extract
-#Parameter 3: Absolute path to packages URLs file
+#cd to sources working directory, decompress, untar package and cd to root directory of the archive
+#arg1: package to extract
 function extract
 {
-	pushd $1 &&
-	tar -xvf $(findArchive $2 $3) &&
-	pushd $(archiveDirectory $1 $2 $3)
+	pushd ${wdir}sources &&
+	tar -xvf $(find_archive $1) &&
+	pushd $(tar_root $1)
 }
 
-#Exit package directory and remove it
-#Parameter 1: Absolute path to directory where we can find the package
-#Parameter 2: Package name
-#Parameter 3: Absolute path to packages URLs file
+#exit extracted package directory and remove it
+#arg1: package name
 function remove
 {
-	local x=$(dirs | wc -w) &&
-	(( x-- )) &&
-	cd $(dirs +$x) &&
-	dirs -c &&
-	rm -rvf ${1}/$(archiveDirectory $1 $2 $3)
+	cd ~-0 && #change to directory at the bottom of the stack
+	dirs -c && #clear the directory stack
+	rm -rvf ${wdir}sources/$(tar_root $1)
 }
 
 #testing purpose only
 function hello
 {
-    echo 'hello world!'
+    echo 'hello world!' &&
+    echo $wdir
 }
 
 #export functions to subshells
-export -f extract remove hello
+export -f find_archive tar_root extract remove hello

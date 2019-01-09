@@ -1,12 +1,11 @@
 #!/bin/bash
 
-#version 5.24.1
+#version 5.28.0
 
-. $(dirname $_)/lib &&
-extract ${1}sources $0 $2 &&
-sh Configure -des -Dprefix=/tools -Dlibs=-lm &&
-make -j $3 &&
+extract $0 &&
+sh Configure -des -Dprefix=/tools -Dlibs=-lm -Uloclibpth -Ulocincpth &&
+make -j $procs &&
 cp -v perl cpan/podlators/scripts/pod2man /tools/bin &&
-mkdir -pv /tools/lib/perl5/5.24.1 &&
-cp -Rv lib/* /tools/lib/perl5/5.24.1 &&
-remove ${1}sources $0 $2
+mkdir -pv /tools/lib/perl5/5.28.0 &&
+cp -Rv lib/* /tools/lib/perl5/5.28.0 &&
+remove $0

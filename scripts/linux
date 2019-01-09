@@ -1,15 +1,14 @@
 #!/bin/bash
 
-#version 4.10
+#version 4.18.5
 
-. $(dirname $_)/lib &&
-extract ${1}sources $0 $2 &&
-make -j $3 mrproper &&
-if [ $# -eq 3 || $4 -eq 1 ]; then
-make -j $3 INSTALL_HDR_PATH=dest headers_install &&
-cp -rv dest/include/* /tools/include
-elif [ $4 -eq 2 ]; then
-find dest/include \( -name .install -o -name ..install.cmd \) -delete &&
-cp -rv dest/include/* /usr/include
+extract $0 &&
+make -j $procs mrproper &&
+if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
+    make -j $procs INSTALL_HDR_PATH=dest headers_install &&
+    cp -rv dest/include/* /tools/include
+elif [ $1 -eq 2 ]; then #second pass
+    find dest/include \( -name .install -o -name ..install.cmd \) -delete &&
+    cp -rv dest/include/* /usr/include
 fi &&
-remove ${1}sources $0 $2
+remove $0

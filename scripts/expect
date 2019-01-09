@@ -1,14 +1,11 @@
 #!/bin/bash
 
-#version 5.45
+#version 5.45.4
 
-. $(dirname $_)/lib &&
-extract ${1}sources $0 $2 &&
+extract $0 &&
 cp -v configure{,.orig} &&
-sed 's:/usr/local/bin:/bin:' configure.orig > configure &&
-./configure --prefix=/tools       \
-            --with-tcl=/tools/lib \
-            --with-tclinclude=/tools/include &&
-make -j $3 &&
-make -j $3 SCRIPTS="" install &&
-remove ${1}sources $0 $2
+sed -i 's:/usr/local/bin:/bin:' configure &&
+./configure --prefix=/tools --with-tcl=/tools/lib --with-tclinclude=/tools/include &&
+make -j $procs &&
+make -j $procs SCRIPTS="" install &&
+remove $0

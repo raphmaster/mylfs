@@ -1,9 +1,8 @@
 #!/bin/bash
 
-#version 1.6
+#version 1.6.1
 
-. $(dirname $_)/lib &&
-extract ${1}sources $0 $2 &&
+extract $0 &&
 ./configure --prefix=/tools &&
-make -j $3 install &&
-remove ${1}sources $0 $2
+make -j $procs install &&
+remove $0
