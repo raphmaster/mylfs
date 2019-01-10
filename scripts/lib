@@ -56,7 +56,7 @@ function remove
 function hello
 {
     echo 'hello world!' &&
-    echo $wdir
+    echo "wdir from function in lib file: $wdir"
 }
 
 #export functions to subshells

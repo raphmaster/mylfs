@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#minimum software check
 #version-8.3
 
 echo 'bash version >= 3.2'

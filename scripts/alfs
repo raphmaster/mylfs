@@ -84,4 +84,4 @@ do
     done &&
     (( line++ ))
 done &&
-echo 'alfs script success'
+echo 'alfs script success!'

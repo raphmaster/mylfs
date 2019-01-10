@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#version 8.3
+
 if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
     #create tools directory for building temporary system
     sudo mkdir -v ${wdir}tools &&
@@ -9,14 +11,14 @@ if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
 fi &&
 #Create new environment
 #unset names that are not needed from environment
-unset $(env | cut -d '=' -f 1 | sed '/^HOME$/d;/^TERM$/d;/^PS1$/d;/^_$/d;/^SHLVL$/d;/^PWD$/d;/^PATH$/d;/^LC_ALL$/d;/^start$/d;/^wdir$/d;/^deps$/d;/^packs$/d;/^line$/d;/^package$/d;/^cmd$/d;/^sdir$/d;/^procs$/d;/^BASH_FUNC/d;/^}$/d') &&
+unset $(env | cut -d '=' -f 1 | sed '/^HOME$/d;/^TERM$/d;/^_$/d;/^SHLVL$/d;/^PWD$/d;/^start$/d;/^wdir$/d;/^deps$/d;/^packs$/d;/^line$/d;/^package$/d;/^cmd$/d;/^sdir$/d;/^procs$/d;/^BASH_FUNC/d;/^}$/d') &&
 #Shell will always search in PATH when a program is to be run
 set +h &&
 #Change prompt
 PS1='\u:\w\$ ' &&
-#Control localization of certain program
-LC_ALL=POSIX &&
 if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
+    #Control localization of certain program
+    LC_ALL=POSIX &&
     #Ensure newly created files and directories are only writable by their owner, but readable and executable by anyone
     umask 022 &&
     #Machine description when compiling
@@ -27,27 +29,27 @@ if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
     export LC_ALL LFS_TGT PATH
 elif [ $1 -eq 2 ]; then #second pass
     HOME=/root &&
-    TERM=xterm &&
     PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin &&
-    export PS1 LC_ALL HOME TERM PATH &&
+    export PS1 HOME TERM PATH &&
     mkdir -pv /{bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt} &&
     mkdir -pv /{media/{floppy,cdrom},sbin,srv,var} &&
     install -dv -m 0750 /root &&
     install -dv -m 1777 /tmp /var/tmp &&
     mkdir -pv /usr/{,local/}{bin,include,lib,sbin,src} &&
     mkdir -pv /usr/{,local/}share/{color,dict,doc,info,locale,man} &&
-    mkdir -pv  /usr/{,local/}share/{misc,terminfo,zoneinfo} &&
-    mkdir -pv  /usr/libexec &&
+    mkdir -pv /usr/{,local/}share/{misc,terminfo,zoneinfo} &&
+    mkdir -pv /usr/libexec &&
     mkdir -pv /usr/{,local/}share/man/man{1..8} &&
     mkdir -pv /lib64 &&
     mkdir -pv /var/{log,mail,spool} &&
     ln -sv /run /var/run &&
     ln -sv /run/lock /var/lock &&
     mkdir -pv /var/{opt,cache,lib/{color,misc,locate},local} &&
-    ln -sv /tools/bin/{bash,cat,echo,pwd,stty} /bin &&
-    ln -sv /tools/bin/perl /usr/bin &&
+    ln -sv /tools/bin/{bash,cat,dd,echo,ln,pwd,rm,stty} /bin &&
+    ln -sv /tools/bin/{env,install,perl} /usr/bin &&
     ln -sv /tools/lib/libgcc_s.so{,.1} /usr/lib &&
-    ln -sv /tools/lib/libstdc++.so{,.6} /usr/lib &&
+    ln -sv /tools/lib/libstdc++.{a,so{,.6}} /usr/lib &&
+
     sed 's/tools/usr/' /tools/lib/libstdc++.la > /usr/lib/libstdc++.la &&
     ln -sv bash /bin/sh &&
     ln -sv /proc/self/mounts /etc/mtab &&

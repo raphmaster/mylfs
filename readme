@@ -20,3 +20,6 @@ deps: the comma-separated-value file that list all packages dependencies and bui
 packs: the file that contains urls to download packages.
 procs: the number of maximum processors to use
 [start]: the optional starting package in dependencies file
+
+NOTES:
+for the lfs dependencies file "lfs-deps", all files needed by scripts after the "transition" dependency need to be in the same directory as the scripts/ directory. this is because the transition script chroot to working directory and all files next to scripts/ directory get copied to working directory. alfs script get reexecuted with the new root directory as the working directory and all files required in it.

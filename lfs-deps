@@ -31,6 +31,7 @@ tar
 texinfo
 util-linux
 xz
+strip
 #transition
 #preparing#2
 linux#2

@@ -11,6 +11,4 @@ procs: $procs
 arg1: $1" &&
 hello &&
 echo 'test script success' &&
-env &&
-unset $(env | cut -d '=' -f 1 | sed '/^PATH$/d;/^BASH_FUNC/d;/^}$/d') &&
-env
+exit 1
