@@ -1,11 +1,9 @@
 #!/bin/bash
 
-#version 1.2.11
+#version 2.4.6
 
 extract $0 &&
 ./configure --prefix=/usr &&
 make -j $procs &&
 make -j $procs install &&
-mv -v /usr/lib/libz.so.* /lib &&
-ln -sfv /lib/$(readlink /usr/lib/libz.so) /usr/lib/libz.so &&
 remove $0

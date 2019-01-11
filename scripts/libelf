@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#version 0.173
+
+extract elfutils &&
+./configure --prefix=/usr &&
+make -j $procs &&
+make -j $procs -C libelf install &&
+install -vm644 config/libelf.pc /usr/lib/pkgconfig &&
+remove elfutils

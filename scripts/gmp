@@ -2,16 +2,15 @@
 
 #version 6.1.2
 
-. $(dirname $_)/lib &&
-extract /sources $0 $2 &&
-./configure --prefix=/usr    \
-            --enable-cxx     \
-            --disable-static \
-            --docdir=/usr/share/doc/gmp-6.1.2 &&
-make -j $3 &&
-make -j $3 html &&
-make check 2>&1 | tee gmp-check-log &&
-if [[ ! $(awk '/# PASS:/{total+=$3} ; END{print total}' gmp-check-log) =~ 190 ]]; then echo $0 'test suite failed!'; exit 1; fi &&
-make -j $3 install &&
-make -j $3 install-html &&
-remove /sources $0 $2
+extract $0 &&
+#generic libraries can be created instead of optimized ones for the host
+#cp -v configfsf.guess config.guess
+#cp -v configfsf.sub config.sub
+./configure --prefix=/usr --enable-cxx --disable-static --docdir=/usr/share/doc/gmp-6.1.2 &&
+make -j $procs &&
+make -j $procs html &&
+make -j $procs check 2>&1 | tee gmp-check-log &&
+if [[ ! $(awk '/# PASS:/{total+=$3} ; END{print total}' gmp-check-log) =~ 190 ]]; then echo "$0 test suite failed!"; exit 1; fi &&
+make -j $procs install &&
+make -j $procs install-html &&
+remove $0

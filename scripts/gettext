@@ -3,12 +3,22 @@
 #version 0.19.8.1
 
 extract $0 &&
-pushd gettext-tools &&
-EMACS="no" ./configure --prefix=/tools --disable-shared &&
-make -j $procs -C gnulib-lib &&
-make -j $procs -C intl pluralx.c &&
-make -j $procs -C src msgfmt &&
-make -j $procs -C src msgmerge &&
-make -j $procs -C src xgettext &&
-cp -v src/{msgfmt,msgmerge,xgettext} /tools/bin &&
+if [ $# -eq 0 || $1 -eq 1 ]; then
+    pushd gettext-tools &&
+    EMACS="no" ./configure --prefix=/tools --disable-shared &&
+    make -j $procs -C gnulib-lib &&
+    make -j $procs -C intl pluralx.c &&
+    make -j $procs -C src msgfmt &&
+    make -j $procs -C src msgmerge &&
+    make -j $procs -C src xgettext &&
+    cp -v src/{msgfmt,msgmerge,xgettext} /tools/bin
+elif [ $1 -eq 2 ]; then
+    sed -i '/^TESTS =/d' gettext-runtime/tests/Makefile.in &&
+    sed -i 's/test-lock..EXEEXT.//' gettext-tools/gnulib-tests/Makefile.in &&
+    sed -e '/AppData/{N;N;p;s/\.appdata\./.metainfo./}' -i gettext-tools/its/appdata.loc &&
+    ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/gettext-0.19.8.1 &&
+    make -j $procs &&
+    make -j $procs install &&
+    chmod -v 0755 /usr/lib/preloadable_libintl.so
+fi &&
 remove $0

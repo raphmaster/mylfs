@@ -39,17 +39,20 @@ elif [ $1 -eq 2 ]; then #second pass
     RANLIB=${LFS_TGT}-ranlib &&
     ../configure --prefix=/tools --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --enable-languages=c,c++ --disable-libstdcxx-pch --disable-multilib --disable-bootstrap --disable-libgomp
 elif [ $1 -eq 3 ]; then #third pass
-    SED=sed                               \
-    ../configure --prefix=/usr            \
-             --enable-languages=c,c++ \
-             --disable-multilib       \
-             --disable-bootstrap      \
-             --with-system-zlib
+    rm -vf /usr/lib/gcc &&
+    SED=sed &&
+    ../configure --prefix=/usr --enable-languages=c,c++ --disable-multilib --disable-bootstrap --disable-libmpx --with-system-zlib &&
 fi &&
 make -j $procs &&
 if [ $1 -eq 3 ]; then #third pass
     ulimit -s 32768 &&
-    make -j $procs -k check
+    rm ../gcc/testsuite/g++.dg/pr83239.C &&
+    chown -Rv nobody . &&
+    su nobody -s /bin/bash -c "PATH=$PATH make -j $procs -k check" &&
+    ../contrib/test_summary | grep -A7 Summ &&
+    echo 'test summaries can be compared with those located at http://www.linuxfromscratch.org/lfs/build-logs/8.3/' &&
+    read -p 'is the above test summaries correct? (y/n) ' result &&
+    if [ $result != 'y' ]; then exit 1; fi
 fi &&
 make -j $procs install &&
 if [ $1 -eq 2 ]; then #second pass
@@ -62,12 +65,12 @@ elif [ $1 -eq 3 ]; then #third pass
     ln -sv /usr/bin/cpp /lib &&
     ln -sv gcc /usr/bin/cc &&
     install -v -dm755 /usr/lib/bfd-plugins &&
-    ln -sfv /usr/libexec/gcc/$(gcc -dumpmachine)/6.3.0/liblto_plugin.so /usr/lib/bfd-plugins/ &&
+    ln -sfv /usr/libexec/gcc/$(gcc -dumpmachine)/8.2.0/liblto_plugin.so /usr/lib/bfd-plugins/ &&
     echo 'int main(){}' > dummy.c &&
     cc dummy.c -v -Wl,--verbose &> dummy.log &&
     if [[ ! $(readelf -l a.out | grep ': /lib') =~ /lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'Toolchain is not working as expected!'; exit 1; fi &&
     if [[ ! $(grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log) =~ /usr/lib64.*/crt1\.o\ succeeded[[:space:]]/usr/lib64.*/crti\.o\ succeeded[[:space:]]/usr/lib64.*/crtn\.o\ succeeded ]]; then echo 'Incorrect start files!'; exit 1; fi &&
-    if [[ ! $(grep -B4 '^ /usr/include' dummy.log) =~ \#include\ \<\.\.\.\>\ search\ starts\ here:[[:space:]]*/usr/lib64/gcc/x86_64-pc-linux-gnu/6\.3\.0/include[[:space:]]*/usr/local/include[[:space:]]*/usr/lib64/gcc/x86_64-pc-linux-gnu/6\.3\.0/include-fixed[[:space:]]*/usr/include ]]; then echo 'Incorrect compiler header files!'; exit 1; fi &&
+    if [[ ! $(grep -B4 '^ /usr/include' dummy.log) =~ \#include\ \<\.\.\.\>\ search\ starts\ here:[[:space:]]*/usr/lib64/gcc/x86_64-pc-linux-gnu/8\.2\.0/include[[:space:]]*/usr/local/include[[:space:]]*/usr/lib64/gcc/x86_64-pc-linux-gnu/8\.2\.0/include-fixed[[:space:]]*/usr/include ]]; then echo 'Incorrect compiler header files!'; exit 1; fi &&
     if [[ ! $(grep 'SEARCH.*/usr/lib' dummy.log | sed 's|; |\n|g') =~ SEARCH_DIR\(\"/usr/x86_64-pc-linux-gnu/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/local/lib64\"\)[[:space:]]SEARCH_DIR\(\"/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/x86_64-pc-linux-gnu/lib\"\)[[:space:]]SEARCH_DIR\(\"/usr/local/lib\"\)[[:space:]]SEARCH_DIR\(\"/lib\"\)[[:space:]]SEARCH_DIR\(\"/usr/lib\"\)\; ]]; then echo 'Incorrect linker search paths!'; exit 1; fi &&
     if [[ ! $(grep "/lib.*/libc.so.6 " dummy.log) =~ attempt\ to\ open\ /lib64/libc\.so\.6\ succeeded ]]; then echo 'Incorrect libc!'; exit 1; fi &&
     if [[ ! $(grep found dummy.log) =~ found\ ld-linux-x86-64\.so\.2\ at\ /lib/ld-linux-x86-64\.so\.2 ]]; then echo 'Incorrect GCC dynamic linker!'; exit 1; fi &&

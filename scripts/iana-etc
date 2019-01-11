@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#version 4.16
+#version 2.30
 
 extract $0 &&
+make -j $procs &&
 make -j $procs install &&
 remove $0

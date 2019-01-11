@@ -4,25 +4,26 @@
 
 extract $0 &&
 if [ $1 -eq 2 ]; then #second pass
-    patch -Np1 -i ../glibc-2.25-fhs-1.patch &&
-    ln -sv /lib/ld-linux-x86-64.so.2 /lib64 &&
-    ln -sv /lib/ld-linux-x86-64.so.2 /lib64/ld-lsb-x86-64.so.3
+    patch -Np1 -i ../glibc-2.28-fhs-1.patch &&
+    ln -svf /tools/lib/gcc /usr/lib &&
+    GCC_INCDIR=/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.0/include &&
+    ln -svf /lib/ld-linux-x86-64.so.2 /lib64 &&
+    ln -svf /lib/ld-linux-x86-64.so.2 /lib64/ld-lsb-x86-64.so.3 &&
+    rm -vf /usr/include/limits.h
 fi &&
 mkdir -v build &&
 pushd build &&
 if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
     ../configure --prefix=/tools --host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=3.2 --with-headers=/tools/include libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes
 elif [ $1 -eq 2 ]; then #second pass
-    ../configure --prefix=/usr                   \
-             --enable-kernel=2.6.32          \
-             --enable-obsolete-rpc           \
-             --enable-stack-protector=strong \
-             libc_cv_slibdir=/lib
+    CC="gcc -isystem $GCC_INCDIR -isystem /usr/include" &&
+    ../configure --prefix=/usr --disable-werror --enable-kernel=3.2 --enable-stack-protector=strong libc_cv_slibdir=/lib
 fi &&
 make -j $procs &&
 if [ $1 -eq 2 ]; then #second pass
-    make -j $3 check &&
-    touch /etc/ld.so.conf
+    make -j $procs check &&
+    touch /etc/ld.so.conf &&
+    sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
 fi &&
 make -j $procs install &&
 if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
@@ -34,6 +35,7 @@ elif [ $1 -eq 2 ]; then #second pass
     cp -v ../nscd/nscd.conf /etc/nscd.conf &&
     mkdir -pv /var/cache/nscd &&
     mkdir -pv /usr/lib/locale &&
+    #install locales for test suites
     localedef -i cs_CZ -f UTF-8 cs_CZ.UTF-8 &&
     localedef -i de_DE -f ISO-8859-1 de_DE &&
     localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro &&
@@ -55,23 +57,27 @@ elif [ $1 -eq 2 ]; then #second pass
     localedef -i ru_RU -f UTF-8 ru_RU.UTF-8 &&
     localedef -i tr_TR -f UTF-8 tr_TR.UTF-8 &&
     localedef -i zh_CN -f GB18030 zh_CN.GB18030 &&
+    #install my own country locales
+    #supported locales can be found in glibc-2.28/localedata/SUPPORTED
     localedef -i en_CA -f UTF-8 en_CA.UTF-8 &&
     localedef -i en_CA -f ISO-8859-1 en_CA &&
     localedef -i fr_CA -f UTF-8 fr_CA.UTF-8 &&
     localedef -i fr_CA -f ISO-8859-1 fr_CA &&
     cp -v /alfs/etc/nsswitch.conf /etc/nsswitch.conf &&
-    tar -xvf /sources/$(findArchive tzdata $2) &&
+    tar -xvf /sources/$(find_archive tzdata) &&
     ZONEINFO=/usr/share/zoneinfo &&
     mkdir -pv ${ZONEINFO}/{posix,right} &&
     for tz in etcetera southamerica northamerica europe africa antarctica asia australasia backward pacificnew systemv
     do
-	zic -L /dev/null   -d $ZONEINFO       -y "sh yearistype.sh" ${tz} &&
-        zic -L /dev/null   -d ${ZONEINFO}/posix -y "sh yearistype.sh" ${tz} &&
-        zic -L leapseconds -d ${ZONEINFO}/right -y "sh yearistype.sh" ${tz} || exit 1
+	zic -L /dev/null -d $ZONEINFO -y "sh yearistype.sh" $tz &&
+        zic -L /dev/null -d ${ZONEINFO}/posix -y "sh yearistype.sh" $tz &&
+        zic -L leapseconds -d ${ZONEINFO}/right -y "sh yearistype.sh" $tz || exit 1
     done &&
     cp -v zone.tab zone1970.tab iso3166.tab $ZONEINFO &&
     zic -d $ZONEINFO -p America/New_York &&
-    unset ZONEINFO &&
+    #install the time zone dor your location
+    #you may use the command tzselect to help you choose the right time zone
+    #other possibilities can be found in /usr/share/zoneinfo
     cp -v /usr/share/zoneinfo/America/Montreal /etc/localtime &&
     cp -v /alfs/etc/ld.so.conf /etc/ld.so.conf &&
     mkdir -pv /etc/ld.so.conf.d

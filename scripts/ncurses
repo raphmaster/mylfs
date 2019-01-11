@@ -8,13 +8,7 @@ if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
     ./configure --prefix=/tools --with-shared --without-debug --without-ada --enable-widec --enable-overwrite
 elif [ $1 -eq 2 ]; then #second pass
     sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in &&
-    ./configure --prefix=/usr           \
-            --mandir=/usr/share/man \
-            --with-shared           \
-            --without-debug         \
-            --without-normal        \
-            --enable-pc-files       \
-            --enable-widec
+    ./configure --prefix=/usr --mandir=/usr/share/man --with-shared --without-debug --without-normal --enable-pc-files --enable-widec
 fi &&
 make -j $procs &&
 make -j $procs install &&
@@ -25,10 +19,12 @@ if [ $1 -eq 2 ]; then #second pass
     do
 	rm -vf /usr/lib/lib${lib}.so &&
 	echo "INPUT(-l${lib}w)" > /usr/lib/lib${lib}.so &&
-	ln -sfv ${lib}w.pc /usr/lib/pkgconfig/${lib}.pc || { echo $0 'script failed!'; exit 1; }
+	ln -sfv ${lib}w.pc /usr/lib/pkgconfig/${lib}.pc || exit 1
     done &&
     rm -vf /usr/lib/libcursesw.so &&
     echo "INPUT(-lncursesw)" > /usr/lib/libcursesw.so &&
-    ln -sfv libncurses.so /usr/lib/libcurses.so
+    ln -sfv libncurses.so /usr/lib/libcurses.so &&
+    mkdir -v /usr/share/doc/ncurses-6.1 &&
+    cp -rv doc/* /usr/share/doc/ncurses-6.1
 fi &&
 remove $0

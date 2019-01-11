@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#version 1.16.1
+
+extract $0 &&
+./configure --prefix=/usr --docdir=/usr/share/doc/automake-1.16.1 &&
+make -j $procs &&
+make -j $procs install &&
+remove $0

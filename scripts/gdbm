@@ -1,0 +1,9 @@
+#!/bin/bash
+
+$version 1.17
+
+extract $0 &&
+./configure --prefix=/usr --disable-static --enable-libgdbm-compat &&
+make -j $procs &&
+make -j $procs install &&
+remove $0

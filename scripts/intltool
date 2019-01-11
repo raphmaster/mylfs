@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#version 0.51.0
+
+extract $0 &&
+sed -i 's:\\\${:\\\$\\{:' intltool-update.in &&
+./configure --prefix=/usr &&
+make -j $procs &&
+make -j $procs install &&
+install -v -Dm644 doc/I18N-HOWTO /usr/share/doc/intltool-0.51.0/I18N-HOWTO &&
+remove $0

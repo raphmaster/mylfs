@@ -3,7 +3,17 @@
 #version 4.5
 
 extract $0 &&
-./configure --prefix=/tools &&
+if [ $# -eq 0 || $1 -eq 1 ]; then ./configure --prefix=/tools
+elif [ $1 -eq 2 ]; then
+    sed -i 's/usr/tools/' build-aux/help2man &&
+    sed -i 's/testsuite.panic-tests.sh//' Makefile.in &&
+    ./configure --prefix=/usr --bindir=/bin
+fi &&
 make -j $procs &&
+if [ $1 -eq 2 ]; then make -j $procs html; fi &&
 make -j $procs install &&
+if [ $1 -eq 2 ]; then
+    install -d -m755 /usr/share/doc/sed-4.5 &&
+    install -m644 doc/sed.html /usr/share/doc/sed-4.5
+fi &&
 remove $0
