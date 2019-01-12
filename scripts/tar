@@ -3,7 +3,12 @@
 #version 1.30
 
 extract $0 &&
-./configure --prefix=/tools &&
+if [ $# -eq 0 || $1 -eq 1 ]; then ./configure --prefix=/tools
+elif [ $1 -eq 2 ]; then
+    export FORCE_UNSAFE_CONFIGURE=1 &&
+    ./configure --prefix=/usr --bindir=/bin
+fi &&
 make -j $procs &&
 make -j $procs install &&
+if [ $1 -eq 2 ]; then make -C doc install-html docdir=/usr/share/doc/tar-1.30; fi &&
 remove $0

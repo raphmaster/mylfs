@@ -77,9 +77,14 @@ kmod
 gettext#2
 libelf
 libffi
+openssl
+python
+ninja
+meson
 procps
 e2fsprogs
 coreutils#2
+check
 diffutils#2
 gawk#2
 findutils#2

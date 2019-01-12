@@ -4,7 +4,9 @@
 
 extract $0 &&
 sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c &&
-./configure --prefix=/tools --without-guile &&
+if [ $# -eq 0 || $1 -eq 1 ]; then ./configure --prefix=/tools --without-guile
+elif [ $1 -eq 2 ]; then ./configure --prefix=/usr
+fi &&
 make -j $procs &&
 make -j $procs install &&
 remove $0

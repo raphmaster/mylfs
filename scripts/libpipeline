@@ -1,10 +1,9 @@
 #!/bin/bash
 
-#version 0.12.0
+#version 1.5.0
 
 extract $0 &&
 ./configure --prefix=/usr &&
 make -j $procs &&
 make -j $procs install &&
-sed -i '1 s/tools/usr/' /usr/bin/checkmk &&
 remove $0

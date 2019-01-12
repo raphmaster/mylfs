@@ -33,14 +33,11 @@ pushd build &&
 if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
     ../configure --target=$LFS_TGT --prefix=/tools --with-glibc-version=2.11 --with-sysroot=$wdir --with-newlib --without-headers --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
 elif [ $1 -eq 2 ]; then #second pass
-    CC=${LFS_TGT}-gcc &&
-    CXX=${LFS_TGT}-g++ &&
-    AR=${LFS_TGT}-ar &&
-    RANLIB=${LFS_TGT}-ranlib &&
+    export CC=${LFS_TGT}-gcc CXX=${LFS_TGT}-g++ AR=${LFS_TGT}-ar RANLIB=${LFS_TGT}-ranlib &&
     ../configure --prefix=/tools --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --enable-languages=c,c++ --disable-libstdcxx-pch --disable-multilib --disable-bootstrap --disable-libgomp
 elif [ $1 -eq 3 ]; then #third pass
     rm -vf /usr/lib/gcc &&
-    SED=sed &&
+    export SED=sed &&
     ../configure --prefix=/usr --enable-languages=c,c++ --disable-multilib --disable-bootstrap --disable-libmpx --with-system-zlib &&
 fi &&
 make -j $procs &&

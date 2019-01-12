@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#version 3.2.5
+
+extract $0 &&
+echo 'HAVE_BLKID=1
+BLKID_LIBS="-lblkid"
+BLKID_CFLAGS="-I/tools/include"' > config.cache &&
+./configure --prefix=/usr --bindir=/sbin --sbindir=/sbin --libdir=/usr/lib --sysconfdir=/etc --libexecdir=/lib --with-rootprefix= --with-rootlibdir=/lib --enable-manpages --disable-static --config-cache &&
+LIBRARY_PATH=/tools/lib make -j $procs &&
+mkdir -pv /lib/udev/rules.d &&
+mkdir -pv /etc/udev/rules.d &&
+make -j $procs LD_LIBRARY_PATH=/tools/lib install &&
+tar -xvf ../udev-lfs-20171102.tar.bz2 &&
+make -f udev-lfs-20171102/Makefile.lfs install &&
+#this command need to be run each time hardware information is updated in /etc/udev/hwdb.d
+LD_LIBRARY_PATH=/tools/lib udevadm hwdb --update &&
+remove $0

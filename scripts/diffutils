@@ -3,7 +3,9 @@
 #version 3.6
 
 extract $0 &&
-./configure --prefix=/tools &&
+if [ $# -eq 0 || $1 -eq 1 ]; then ./configure --prefix=/tools
+elif [ $1 -eq 2 ]; then ./configure --prefix=/usr
+fi &&
 make -j $procs &&
 make -j $procs install &&
 remove $0

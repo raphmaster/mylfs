@@ -3,7 +3,13 @@
 #version 2.32.1
 
 extract $0 &&
-./configure --prefix=/tools --without-python --disable-makeinstall-chown --without-systemdsystemunitdir --without-ncurses PKG_CONFIG="" &&
+if [ $# -eq 0 || $1 -eq 1 ]; then
+    ./configure --prefix=/tools --without-python --disable-makeinstall-chown --without-systemdsystemunitdir --without-ncurses PKG_CONFIG=""
+elif [ $1 -eq 2 ]; then
+    mkdir -pv /var/lib/hwclock &&
+    rm -vf /usr/include/{blkid,libmount,uuid} &&
+    ./configure ADJTIME_PATH=/var/lib/hwclock/adjtime --docdir=/usr/share/doc/util-linux-2.32.1 --disable-chfn-chsh --disable-login --disable-nologin --disable-su --disable-setpriv --disable-runuser --disable-pylibmount --disable-static --without-python --without-systemd --without-systemdsystemunitdir
+fi &&
 make -j $procs &&
 make -j $procs install &&
 remove $0

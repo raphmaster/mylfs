@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#version 2.02
+
+extract $0 &&
+./configure --prefix=/usr --sbindir=/sbin --sysconfdir=/etc --disable-efiemu --disable-werror &&
+make -j $procs &&
+make -j $procs install &&
+remove $0

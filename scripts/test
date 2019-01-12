@@ -10,5 +10,6 @@ packs: $packs
 procs: $procs
 arg1: $1" &&
 hello &&
-echo 'test script success' &&
-exit 1
+export test=hello &&
+${sdir}test2 &&
+echo 'test script success'

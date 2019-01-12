@@ -4,7 +4,7 @@
 
 extract $0 &&
 sed -i "/math.h/a #include <malloc.h>" src/flexdef.h &&
-HELP2MAN=/tools/bin/true &&
+export HELP2MAN=/tools/bin/true &&
 ./configure --prefix=/usr --docdir=/usr/share/doc/flex-2.6.4 &&
 make -j $procs &&
 make -j $procs install &&

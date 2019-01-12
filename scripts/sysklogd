@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#version 1.5.1
+
+extract $0 &&
+sed -i '/Error loading kernel symbols/{n;n;d}' ksym_mod.c &&
+sed -i 's/union wait/int/' syslogd.c &&
+make -j $procs &&
+make -j $procs BINDIR=/sbin install &&
+cp -v /alfs/etc/syslog.conf /etc/syslog.conf &&
+remove $0

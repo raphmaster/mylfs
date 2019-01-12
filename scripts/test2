@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#testing purpose only
+
+echo $test

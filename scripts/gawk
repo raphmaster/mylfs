@@ -3,7 +3,15 @@
 #version 4.2.1
 
 extract $0 &&
-./configure --prefix=/tools &&
+if [ $# -eq 0 || $1 -eq 1 ]; then ./configure --prefix=/tools
+elif [ $1 -eq 2 ]; then
+    sed -i 's/extras//' Makefile.in &&
+    ./configure --prefix=/usr
+fi &&
 make -j $procs &&
 make -j $procs install &&
+if [ $1 -eq 2 ]; then
+    mkdir -v /usr/share/doc/gawk-4.2.1 &&
+    cp -v doc/{awkforai.txt,*.{eps,pdf,jpg}} /usr/share/doc/gawk-4.2.1
+fi &&
 remove $0

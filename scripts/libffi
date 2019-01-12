@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#version 3.2.1
+
+extract $0 &&
+sed -e '/^includesdir/ s/$(libdir).*$/$(includedir)/' -i include/Makefile.in &&
+sed -e '/^includedir/ s/=.*$/=@includedir@/' -e 's/^Cflags: -I${includedir}/Cflags:/' -i libffi.pc.in &&
+#you can change --with-gcc-arch= parameter to an alternative system type, see x86 options in the gcc manual
+./configure --prefix=/usr --disable-static --with-gcc-arch=native &&
+make -j $procs &&
+make -j $procs install &&
+remove $0
