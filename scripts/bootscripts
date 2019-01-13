@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#version 20180820
+
+extract $0 &&
+make -j $procs install &&
+remove $0
