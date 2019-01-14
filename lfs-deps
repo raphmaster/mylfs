@@ -105,5 +105,7 @@ man-db
 tar#2
 texinfo#2
 vim
+strip#2
+clean
 bootscripts
-finishing
+config

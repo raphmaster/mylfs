@@ -2,11 +2,25 @@
 
 #version 8.3
 
-#strip libraries
-strip --strip-debug /tools/lib/* &&
-#strip binaries
-/usr/bin/strip --strip-unneeded /tools/{,s}bin/* &&
-#remove documentation
-rm -rvf /tools/{,share}/{info,man,doc} &&
-#remove unnedded files
-find /tools/{lib,libexec} -name \*.la -delete
+if [ $# -eq 0 || $1 -eq 1 ]; then
+    #strip libraries
+    strip --strip-debug /tools/lib/* &&
+    #strip binaries
+    /usr/bin/strip --strip-unneeded /tools/{,s}bin/* &&
+    #remove documentation
+    rm -rvf /tools/{,share}/{info,man,doc} &&
+    #remove unnedded files
+    find /tools/{lib,libexec} -name \*.la -delete
+elif [ $1 -eq 2 ]; then
+    #keep debugging information for regression tests that use valgring or gdb
+    for lib in /lib/{ld-2.28.so,libc-2.28.so,libpthread-2.28.so,libthread_db-1.0.so} /usr/lib/{libquadmath.so.0.0.0,libstdc++.so.6.0.25,libitm.so.1.0.0,libatomic.so.1.2.0}
+    do
+	objcopy --only-keep-debug $lib ${lib}.dbg &&
+        strip --strip-unneeded $lib &&
+        objcopy --add-gnu-debuglink=${lib}.dbg $lib || exit 1
+    done &&
+    #we are supposed to be in chroot and executing binaries from /tools so binaries from {/usr/{lib,bin,sbin,libexec},/lib,/sbin./bin} can be safely stripped
+    /tools/bin/find /usr/lib -type f -name \*.a -exec /tools/bin/strip --strip-debug {} ';' &&
+    /tools/bin/find /lib /usr/lib -type f \( -name \*.so* -a ! -name \*dbg \) -exec /tools/bin/strip --strip-unneeded {} ';' &&
+    /tools/bin/find /{bin,sbin} /usr/{bin,sbin,libexec} -type f -exec /tools/bin/strip --strip-all {} ';'
+fi

@@ -1,0 +1,14 @@
+config files:
+/etc/syslog.conf,system message logging
+/etc/localtime,time zone data
+/etc/ld.so.conf,dynamic loader search directories (shared libs .so)
+/etc/vimrc,system-wide vim configuration
+/etc/passwd,user account informations
+/etc/group,group informations
+/etc/sysconfig/ifconfig.*,network interface configuration
+/etc/resolv.conf,domain name server list
+/etc/hostname,computer name
+/etc/hosts,hostnames static table
+/etc/clock,hardware clock informations
+
+kernel config:

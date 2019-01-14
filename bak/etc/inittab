@@ -1,5 +1,4 @@
 #Entries are of the form id:runlevels:action:process
-#rc script read a library of functions in /lib/lsb/init-functions. this library also read an optional configuration file /etc/sysconfig/rc.site
 
 #Default runlevel
 id:3:initdefault:
@@ -20,7 +19,7 @@ l6:6:wait:/etc/rc.d/init.d/rc 6
 ca:12345:ctrlaltdel:/sbin/shutdown -t1 -a -r now
 
 #Start single user login once (root login)
-su:S016:once:/sbin/sulogin
+su:S1:once:/sbin/sulogin
 
 #Start terminals 1-6 and restart them when they terminate
 1:2345:respawn:/sbin/agetty --noclear tty1 9600
