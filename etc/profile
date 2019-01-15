@@ -1,0 +1,3 @@
+#replace <ll> below with the two-letter code for the desired language (e.g., “en”) and <CC> with the two-letter code for the appropriate country (e.g., “GB”). <charmap> should be replaced with the canonical charmap for your chosen locale. Optional modifiers such as “@euro” may also be present.
+#export LANG=<ll>_<CC>.<charmap><@modifiers>
+export LANG=en_CA.ISO-8859-1

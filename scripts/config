@@ -3,5 +3,5 @@
 #version 8.3
 
 read -p $'Ensure your configuration files are set up to your needs because they will be copied to their final destination!\nPress enter to continue...' &&
-cp -v /alfs/etc/sysconfig/static.ifconfig.example /etc/sysconfig/ &&
-cp -v /alfs/etc/{resolv.conf,hostname,hosts,inittab,clock} /etc/ &&
+cp -v /alfs/etc/sysconfig/{static.ifconfig.example,console,rc.site} /etc/sysconfig/ &&
+cp -v /alfs/etc/{resolv.conf,hostname,hosts,inittab,clock,profile,inputrc,shells,fstab} /etc/

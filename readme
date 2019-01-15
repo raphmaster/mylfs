@@ -1,5 +1,7 @@
 Automated Linux From Scratch (alfs)
 
+this repository contains all the files for building a x86 64-bit target system on a x86 64-bit host system. anything different from that will need some modifications to the scripts or other files. it is free to you to tweak parts of the build process to make the customized system that you want.
+
 USAGE: alfs wdir deps packs procs [start]
 
 DESCRIPTION:

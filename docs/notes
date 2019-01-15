@@ -6,9 +6,15 @@ config files:
 /etc/passwd,user account informations
 /etc/group,group informations
 /etc/sysconfig/ifconfig.*,network interface configuration
+/etc/sysconfig/console,console keymap font and loglevel
+/etc/sysconfig/rc.site,settings for systemv bootscripts
 /etc/resolv.conf,domain name server list
 /etc/hostname,computer name
 /etc/hosts,hostnames static table
 /etc/clock,hardware clock informations
+/etc/profile,interactive login shell profile
+/etc/inputrc,readline configuration
+/etc/shells,login shells list
+/etc/fstab,filesystem mount table
 
 kernel config:
