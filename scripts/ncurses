@@ -3,7 +3,7 @@
 #version 6.1
 
 extract $0 &&
-if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
+if [ $1 -eq 1 ]; then #first pass
     sed -i s/mawk// configure &&
     ./configure --prefix=/tools --with-shared --without-debug --without-ada --enable-widec --enable-overwrite
 elif [ $1 -eq 2 ]; then #second pass

@@ -23,7 +23,7 @@ function column_count
 #output: archive name
 function find_archive
 {
-	grep "^$1" $packs | cut -f 2 | rev | cut -d '/' -f 1 | rev
+    grep "^$(basename $1)" $packs | cut -f 2 | rev | cut -d '/' -f 1 | rev
 }
 
 #find tar archive root directory name from package name in sources working directory
@@ -31,25 +31,33 @@ function find_archive
 #output: archive root directory
 function tar_root
 {
-	tar -tf ${wdir}sources/$(find_archive $1) | sed '1q;d' | cut -d '/' -f 1
+    tar -tf ${wdir}sources/$(find_archive $(basename $1)) | sed '1q;d' | cut -d '/' -f 1
 }
 
 #cd to sources working directory, decompress, untar package and cd to root directory of the archive
-#arg1: package to extract
+#arg1: package name
 function extract
 {
-	pushd ${wdir}sources &&
-	tar -xvf $(find_archive $1) &&
-	pushd $(tar_root $1)
+    pushd ${wdir}sources &&
+    tar -xvf $(find_archive $(basename $1)) &&
+    pushd $(tar_root $(basename $1))
 }
 
 #exit extracted package directory and remove it
 #arg1: package name
 function remove
 {
-	cd ~-0 && #change to directory at the bottom of the stack
-	dirs -c && #clear the directory stack
-	rm -rvf ${wdir}sources/$(tar_root $1)
+    cd ~-0 && #change to directory at the bottom of the stack
+    dirs -c && #clear the directory stack
+    rm -rvf ${wdir}sources/$(tar_root $(basename $1))
+}
+
+#evaluate words from args environment variable
+#exit status: 0 if evaluation is succesfull, otherwise an error code >= 1
+function arg_eval
+{
+    if [ ${args[0]:-''} = '' ]; then return 1; fi && #invalid package script/name
+    args[1]=${args[1]:-1} #replace args[1] by 1 if unset or null
 }
 
 #testing purpose only

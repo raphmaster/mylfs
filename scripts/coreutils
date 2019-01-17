@@ -3,7 +3,7 @@
 #version 8.30
 
 extract $0 &&
-if [ $# -eq 0 || $1 -eq 1 ]; then ./configure --prefix=/tools --enable-install-program=hostname
+if [ $1 -eq 1 ]; then ./configure --prefix=/tools --enable-install-program=hostname
 elif [ $1 -eq 2 ]; then
     patch -Np1 -i ../coreutils-8.30-i18n-1.patch &&
     sed -i '/test.lock/s/^/#/' gnulib-tests/gnulib.mk &&

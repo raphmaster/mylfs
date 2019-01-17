@@ -3,14 +3,14 @@
 #version 5.28.0
 
 extract $0 &&
-if [ $# -eq 0 || $1 -eq 1 ]; then sh Configure -des -Dprefix=/tools -Dlibs=-lm -Uloclibpth -Ulocincpth
+if [ $1 -eq 1 ]; then sh Configure -des -Dprefix=/tools -Dlibs=-lm -Uloclibpth -Ulocincpth
 elif [ $1 -eq 2 ]; then
     echo "127.0.0.1 localhost $(hostname)" > /etc/hosts &&
     export BUILD_ZLIB=False BUILD_BZIP2=0 &&
     sh Configure -des -Dprefix=/usr -Dvendorprefix=/usr -Dman1dir=/usr/share/man/man1 -Dman3dir=/usr/share/man/man3 -Dpager="/usr/bin/less -isR" -Duseshrplib -Dusethreads
 fi &&
 make -j $procs &&
-if [ $# -eq 0 || $1 -eq 1 ]; then
+if [ $1 -eq 1 ]; then
     cp -v perl cpan/podlators/scripts/pod2man /tools/bin &&
     mkdir -pv /tools/lib/perl5/5.28.0 &&
     cp -Rv lib/* /tools/lib/perl5/5.28.0

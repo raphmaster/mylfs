@@ -11,7 +11,7 @@ if [ $1 -eq 2 ]; then #second pass
     make -j $procs clean
 fi &&
 make -j $procs &&
-if [ $# -eq 0 || $1 -eq 1 ]; then make -j $procs PREFIX=/tools install #first pass
+if [ $1 -eq 1 ]; then make -j $procs PREFIX=/tools install #first pass
 elif [ $1 -eq 2 ]; then #second pass
     make -j $procs PREFIX=/usr install &&
     cp -v bzip2-shared /bin/bzip2 &&

@@ -2,7 +2,7 @@
 
 #version 8.3
 
-if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
+if [ $1 -eq 1 ]; then #first pass
     #create tools directory for building temporary system
     sudo mkdir -v ${wdir}tools &&
     sudo ln -sv ${wdir}tools /tools &&
@@ -11,12 +11,12 @@ if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
 fi &&
 #Create new environment
 #unset names that are not needed from environment
-unset $(env | cut -d '=' -f 1 | sed '/^HOME$/d;/^TERM$/d;/^_$/d;/^SHLVL$/d;/^PWD$/d;/^start$/d;/^wdir$/d;/^deps$/d;/^packs$/d;/^line$/d;/^package$/d;/^cmd$/d;/^sdir$/d;/^procs$/d;/^BASH_FUNC/d;/^}$/d') &&
+unset $(env | cut -d '=' -f 1 | sed '/^HOME$/d;/^TERM$/d;/^_$/d;/^SHLVL$/d;/^PWD$/d;/^start$/d;/^wdir$/d;/^deps$/d;/^packs$/d;/^line$/d;/^package$/d;/^pre$/d;/^args$/d;/^sdir$/d;/^procs$/d;/^BASH_FUNC/d;/^}$/d') &&
 #Shell will always search in PATH when a program is to be run
 set +h &&
 #Change prompt
 PS1='\u:\w\$ ' &&
-if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
+if [ $1 -eq 1 ]; then #first pass
     #Control localization of certain program
     LC_ALL=POSIX &&
     #Ensure newly created files and directories are only writable by their owner, but readable and executable by anyone

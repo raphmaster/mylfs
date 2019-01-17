@@ -8,8 +8,7 @@ wdir: $wdir
 deps: $deps
 packs: $packs
 procs: $procs
-arg1: $1" &&
+arg1: $1
+args[1]: ${args[1]}" &&
 hello &&
-export test=hello &&
-${sdir}test2 &&
-echo 'test script success'
+echo "$0 script success"

@@ -29,7 +29,7 @@ procs: the number of maximum processors to use
 [start]: the optional starting package in dependencies file'; 
     exit 1;
 fi
-if [ ! -d $1 ]; then sudo mkdir -v $1 || { echo 'Unable to create working directory:' $1; exit 1; }; fi
+if [ ! -d $1 ]; then sudo mkdir -pv $1 || { echo 'Unable to create working directory:' $1; exit 1; }; fi
 if [ ! -e $2 ]; then echo 'Unable to locate dependencies CSV file:' $2; exit 1; fi
 if [ ! -e $3 ]; then echo 'Unable to locate packages download URLs file:' $3; exit 1; fi
 if [[ ! $4 =~ ^[0-9]+$ ]]; then echo 'Invalid number of processors to use:' $4; exit 1; fi
@@ -75,11 +75,18 @@ do
 	#if we reached the starting package
 	if [ $start == 'false' ]; then
 	    #Packages starting with # are run in the current shell context
-	    if [[ $package =~ ^# ]]; then cmd=". ${sdir}$(echo $package | cut -d '#' -f 2- | tr '#' ' ')"
+	    if [[ $package =~ ^# ]]; then
+		args=($(echo $package | cut -d '#' -f 2- | tr '#' ' ')) &&
+		pre='. '
 	    #Others are run in subshell (separate shell context)
-	    else cmd="${sdir}$(echo $package | tr '#' ' ')"; fi &&
+	    else
+		args=($(echo $package | tr '#' ' ')) &&
+		pre=''
+	    fi &&
+	    #evaluate arguments and capture errors
+	    { arg_eval || { echo "invalid argument for package $package"; exit 1; }; } &&
 	    #Run package script and capture errors
-	    $cmd || { echo $package 'script failed!'; exit 1; }
+	    ${pre}${sdir}${args[@]} || { echo $package 'script failed!'; exit 1; }
 	fi
     done &&
     (( line++ ))

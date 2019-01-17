@@ -3,7 +3,7 @@
 #version 5.2.4
 
 extract $0
-if [ $# -eq 0 || $1 -eq 1]; then ./configure --prefix=/tools
+if [ $1 -eq 1]; then ./configure --prefix=/tools
 elif [ $1 -eq 2 ]; then ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/xz-5.2.4
 fi &&
 make -j $procs &&

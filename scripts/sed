@@ -3,7 +3,7 @@
 #version 4.5
 
 extract $0 &&
-if [ $# -eq 0 || $1 -eq 1 ]; then ./configure --prefix=/tools
+if [ $1 -eq 1 ]; then ./configure --prefix=/tools
 elif [ $1 -eq 2 ]; then
     sed -i 's/usr/tools/' build-aux/help2man &&
     sed -i 's/testsuite.panic-tests.sh//' Makefile.in &&

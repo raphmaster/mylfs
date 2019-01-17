@@ -2,7 +2,7 @@
 
 #version 8.3
 
-if [ $# -eq 0 || $1 -eq 1 ]; then
+if [ $1 -eq 1 ]; then
     #strip libraries
     strip --strip-debug /tools/lib/* &&
     #strip binaries

@@ -3,7 +3,7 @@
 #version 2.7.6
 
 extract $0 &&
-if [ $# -eq 0 || $1 -eq 1 ]; then ./configure --prefix=/tools
+if [ $1 -eq 1 ]; then ./configure --prefix=/tools
 elif [ $1 -eq 2 ]; then ./configure --prefix=/usr
 fi &&
 make -j $procs &&

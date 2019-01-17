@@ -3,7 +3,7 @@
 #version 0.19.8.1
 
 extract $0 &&
-if [ $# -eq 0 || $1 -eq 1 ]; then
+if [ $1 -eq 1 ]; then
     pushd gettext-tools &&
     EMACS="no" ./configure --prefix=/tools --disable-shared &&
     make -j $procs -C gnulib-lib &&

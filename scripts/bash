@@ -3,12 +3,12 @@
 #version 4.4.18
 
 extract $0 &&
-if [ $# -eq 0 || $1 -eq 1 ]; then ./configure --prefix=/tools --without-bash-malloc
+if [ $1 -eq 1 ]; then ./configure --prefix=/tools --without-bash-malloc
 elif [ $1 -eq 2 ]; then ./configure --prefix=/usr --docdir=/usr/share/doc/bash-4.4.18 --without-bash-malloc --with-installed-readline
 fi &&
 make -j $procs &&
 make -j $procs install &&
-if [ $# -eq 0 || $1 -eq 1 ]; then ln -sv bash /tools/bin/sh
+if [ $1 -eq 1 ]; then ln -sv bash /tools/bin/sh
 elif [ $1 -eq 2 ]; then mv -vf /usr/bin/bash /bin
 fi &&
 remove $0

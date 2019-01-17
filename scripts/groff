@@ -3,7 +3,7 @@
 #version 1.22.3
 
 extract $0 &&
-#set paper size ex:letter,A4
+#set paper size (letter,A4)
 PAGE=letter ./configure --prefix=/usr &&
 make -j 1 &&
 make -j $procs install &&

@@ -13,7 +13,7 @@ if [ $1 -eq 2 ]; then #second pass
 fi &&
 mkdir -v build &&
 pushd build &&
-if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
+if [ $1 -eq 1 ]; then #first pass
     ../configure --prefix=/tools --host=$LFS_TGT --build=$(../scripts/config.guess) --enable-kernel=3.2 --with-headers=/tools/include libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes
 elif [ $1 -eq 2 ]; then #second pass
     export CC="gcc -isystem $GCC_INCDIR -isystem /usr/include" &&
@@ -26,7 +26,7 @@ if [ $1 -eq 2 ]; then #second pass
     sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
 fi &&
 make -j $procs install &&
-if [ $# -eq 0 || $1 -eq 1 ]; then #first pass
+if [ $1 -eq 1 ]; then #first pass
     echo 'int main(){}' > dummy.c &&
     ${LFS_TGT}-gcc dummy.c &&
     if [[ ! $(readelf -l a.out | grep ': /tools') =~ /tools/lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'Toolchain is not working as expected!'; exit 1; fi &&
