@@ -4,7 +4,7 @@
 
 if [ $1 -eq 1 ]; then #first pass
     #create tools directory for building temporary system
-    sudo mkdir -v ${wdir}tools &&
+    sudo mkdir -pv ${wdir}tools &&
     sudo ln -sv ${wdir}tools /tools &&
     sudo chown -Rv $(id -un): ${wdir}tools &&
     chmod -Rv 755 ${wdir}tools
@@ -19,12 +19,12 @@ PS1='\u:\w\$ ' &&
 if [ $1 -eq 1 ]; then #first pass
     #Control localization of certain program
     LC_ALL=POSIX &&
+    #New compiled tools will be searched before old ones
+    PATH=/tools/bin:/bin:/usr/bin &&
     #Ensure newly created files and directories are only writable by their owner, but readable and executable by anyone
     umask 022 &&
     #Machine description when compiling
     LFS_TGT=$(uname -m)-alfs-linux-gnu &&
-    #New compiled tools will be searched before old ones
-    PATH=/tools/bin:/bin:/usr/bin &&
     #Make environment variable to be passed to child processes
     export LC_ALL LFS_TGT PATH
 elif [ $1 -eq 2 ]; then #second pass

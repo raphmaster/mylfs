@@ -24,7 +24,7 @@ if [ $1 -eq 2 ]; then #second pass
     rm -vf /usr/lib/libcursesw.so &&
     echo "INPUT(-lncursesw)" > /usr/lib/libcursesw.so &&
     ln -sfv libncurses.so /usr/lib/libcurses.so &&
-    mkdir -v /usr/share/doc/ncurses-6.1 &&
+    mkdir -pv /usr/share/doc/ncurses-6.1 &&
     cp -rv doc/* /usr/share/doc/ncurses-6.1
 fi &&
 remove $0

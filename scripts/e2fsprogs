@@ -3,7 +3,7 @@
 #version 1.44.3
 
 extract $0 &&
-mkdir -v build &&
+mkdir -pv build &&
 pushd build &&
 ../configure --prefix=/usr --bindir=/bin --with-root-prefix="" --enable-elf-shlibs --disable-libblkid --disable-libuuid --disable-uuidd --disable-fsck &&
 make -j $procs &&

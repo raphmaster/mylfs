@@ -3,7 +3,7 @@
 #version 2.31.1
 
 extract $0 &&
-mkdir -v build &&
+mkdir -pv build &&
 pushd build &&
 if [ $1 -eq 1 ]; then #first pass
     ../configure --prefix=/tools --with-sysroot=$wdir --with-lib-path=/tools/lib --target=$LFS_TGT --disable-nls --disable-werror
@@ -17,7 +17,7 @@ fi &&
 if [ $1 -eq 1 -o $1 -eq 2 ]; then make -j $procs #first/second pass
 elif [ $1 -eq 3 ]; then make -j $procs tooldir=/usr; fi && #third pass
 if [ $1 -eq 1 ]; then #first pass
-    mkdir -v /tools/lib &&
+    mkdir -pv /tools/lib &&
     ln -sv lib /tools/lib64
 fi &&
 if [ $1 -eq 1 -o $1 -eq 2 ]; then make -j $procs install #first/second pass

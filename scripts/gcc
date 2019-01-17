@@ -28,7 +28,7 @@ if [ $1 -eq 1 -o $1 -eq 2 ]; then #first/second pass
     done &&
 fi &&
 sed -i -e '/m64=/s/lib64/lib/' gcc/config/i386/t-linux64 && #change 64-bit libraries default directory to lib
-mkdir -v build &&
+mkdir -pv build &&
 pushd build &&
 if [ $1 -eq 1 ]; then #first pass
     ../configure --target=$LFS_TGT --prefix=/tools --with-glibc-version=2.11 --with-sysroot=$wdir --with-newlib --without-headers --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
