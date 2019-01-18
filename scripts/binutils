@@ -18,7 +18,7 @@ if [ $1 -eq 1 -o $1 -eq 2 ]; then make -j $procs #first/second pass
 elif [ $1 -eq 3 ]; then make -j $procs tooldir=/usr; fi && #third pass
 if [ $1 -eq 1 ]; then #first pass
     mkdir -pv /tools/lib &&
-    ln -sv lib /tools/lib64
+    ln -svf lib /tools/lib64
 fi &&
 if [ $1 -eq 1 -o $1 -eq 2 ]; then make -j $procs install #first/second pass
 elif [ $1 -eq 3 ]; then #third pass

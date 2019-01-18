@@ -2,15 +2,15 @@
 
 #version 5.2.4
 
-extract $0
-if [ $1 -eq 1]; then ./configure --prefix=/tools
+extract $0 &&
+if [ $1 -eq 1 ]; then ./configure --prefix=/tools
 elif [ $1 -eq 2 ]; then ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/xz-5.2.4
 fi &&
 make -j $procs &&
 make -j $procs install &&
 if [ $1 -eq 2 ]; then
-    mv -v /usr/bin/{lzma,unlzma,lzcat,xz,unxz,xzcat} /bin &&
-    mv -v /usr/lib/liblzma.so.* /lib &&
+    mv -vf /usr/bin/{lzma,unlzma,lzcat,xz,unxz,xzcat} /bin &&
+    mv -vf /usr/lib/liblzma.so.* /lib &&
     ln -svf /lib/$(readlink /usr/lib/liblzma.so) /usr/lib/liblzma.so
 fi &&
 remove $0

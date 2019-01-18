@@ -7,6 +7,6 @@ extract $0 &&
 make -j $procs &&
 sed -i '/INSTALL_LIBS/s/libcrypto.a libssl.a//' Makefile &&
 make -j $procs MANSUFFIX=ssl install &&
-mv -v /usr/share/doc/openssl /usr/share/doc/openssl-1.1.0i &&
+mv -vf /usr/share/doc/openssl /usr/share/doc/openssl-1.1.0i &&
 cp -vfr doc/* /usr/share/doc/openssl-1.1.0i &&
 remove $0

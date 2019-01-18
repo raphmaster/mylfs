@@ -9,7 +9,7 @@ if [ $1 -eq 2 ]; then #second pass
     GCC_INCDIR=/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.0/include &&
     ln -svf /lib/ld-linux-x86-64.so.2 /lib64 &&
     ln -svf /lib/ld-linux-x86-64.so.2 /lib64/ld-lsb-x86-64.so.3 &&
-    rm -vf /usr/include/limits.h
+    rm -v /usr/include/limits.h
 fi &&
 mkdir -pv build &&
 pushd build &&
@@ -30,7 +30,7 @@ if [ $1 -eq 1 ]; then #first pass
     echo 'int main(){}' > dummy.c &&
     ${LFS_TGT}-gcc dummy.c &&
     if [[ ! $(readelf -l a.out | grep ': /tools') =~ /tools/lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'Toolchain is not working as expected!'; exit 1; fi &&
-    rm -vf dummy.c a.out
+    rm -v dummy.c a.out
 elif [ $1 -eq 2 ]; then #second pass
     cp -v ../nscd/nscd.conf /etc/nscd.conf &&
     mkdir -pv /var/cache/nscd &&

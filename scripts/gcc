@@ -9,11 +9,11 @@ fi &&
 if [ $1 -eq 1 -o $1 -eq 2 ]; then #first/second pass
     #unpack mpfr,gmp,mpc and rename them so gcc build will use them
     tar -xvf ../$(find_archive mpfr) &&
-    mv -v $(tar_root mpfr) mpfr &&
+    mv -vf $(tar_root mpfr) mpfr &&
     tar -xvf ../$(find_archive gmp) &&
-    mv -v $(tar_root gmp) gmp &&
+    mv -vf $(tar_root gmp) gmp &&
     tar -xvf ../$(find_archive mpc) &&
-    mv -v $(tar_root mpc) mpc &&
+    mv -vf $(tar_root mpc) mpc &&
     #change default dynamic linker to the one in tools
     #remove /usr/include from include search path
     for file in gcc/config/{linux,i386/linux{,64}}.h
@@ -53,14 +53,14 @@ if [ $1 -eq 3 ]; then #third pass
 fi &&
 make -j $procs install &&
 if [ $1 -eq 2 ]; then #second pass
-    ln -sv gcc /tools/bin/cc &&
+    ln -svf gcc /tools/bin/cc &&
     echo 'int main(){}' > dummy.c &&
     cc dummy.c &&
     if [[ ! $(readelf -l a.out | grep ': /tools') =~ /tools/lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'Toolchain is not working as expected!'; exit 1; fi &&
     rm -v dummy.c a.out
 elif [ $1 -eq 3 ]; then #third pass
-    ln -sv /usr/bin/cpp /lib &&
-    ln -sv gcc /usr/bin/cc &&
+    ln -svf /usr/bin/cpp /lib &&
+    ln -svf gcc /usr/bin/cc &&
     install -v -dm755 /usr/lib/bfd-plugins &&
     ln -sfv /usr/libexec/gcc/$(gcc -dumpmachine)/8.2.0/liblto_plugin.so /usr/lib/bfd-plugins/ &&
     echo 'int main(){}' > dummy.c &&
@@ -73,6 +73,6 @@ elif [ $1 -eq 3 ]; then #third pass
     if [[ ! $(grep found dummy.log) =~ found\ ld-linux-x86-64\.so\.2\ at\ /lib/ld-linux-x86-64\.so\.2 ]]; then echo 'Incorrect GCC dynamic linker!'; exit 1; fi &&
     rm -v dummy.c a.out dummy.log &&
     mkdir -pv /usr/share/gdb/auto-load/usr/lib &&
-    mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
+    mv -vf /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
 fi &&
 remove $0

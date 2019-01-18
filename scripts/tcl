@@ -9,5 +9,5 @@ make -j $procs &&
 make -j $procs install &&
 chmod -v u+w /tools/lib/libtcl8.6.so &&
 make -j $procs install-private-headers &&
-ln -sv tclsh8.6 /tools/bin/tclsh &&
+ln -svf tclsh8.6 /tools/bin/tclsh &&
 remove $0

@@ -6,6 +6,6 @@ extract $0 &&
 ./configure --prefix=/usr &&
 make -j $procs &&
 make -j $procs install &&
-mv -v /usr/bin/fuser /bin &&
-mv -v /usr/bin/killall /bin &&
+mv -vf /usr/bin/fuser /bin &&
+mv -vf /usr/bin/killall /bin &&
 remove $0

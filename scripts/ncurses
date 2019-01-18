@@ -13,7 +13,7 @@ fi &&
 make -j $procs &&
 make -j $procs install &&
 if [ $1 -eq 2 ]; then #second pass
-    mv -v /usr/lib/libncursesw.so.6* /lib &&
+    mv -vf /usr/lib/libncursesw.so.6* /lib &&
     ln -sfv /lib/$(readlink /usr/lib/libncursesw.so) /usr/lib/libncursesw.so &&
     for lib in ncurses form panel menu
     do
