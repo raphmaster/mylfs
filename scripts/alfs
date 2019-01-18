@@ -68,12 +68,12 @@ do
     for package in $(sed "${line}q;d" $deps | tr ',' ' ')
     do
 	#if we need to start at a specific package
-	if [ start == 'true' ]; then
+	if [ $start = 'true' ]; then
 	    #Check if we reached the starting package
 	    if [ $package == $5 ]; then start='false'; fi
 	fi &&
 	#if we reached the starting package
-	if [ $start == 'false' ]; then
+	if [ $start = 'false' ]; then
 	    #Packages starting with # are run in the current shell context
 	    if [[ $package =~ ^# ]]; then
 		args=($(echo $package | cut -d '#' -f 2- | tr '#' ' ')) &&
