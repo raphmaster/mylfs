@@ -18,6 +18,7 @@ each package name in dependencies file must match the name of an executable scri
 the package names in dependencies file must follow this uasge: [#]package[#param]...
 a # character can be inserted at the beginning of the package name in dependencies file to indicate that the script must be executed in the current shell context, otherwise script are executed in a separate shell context.
 many others # can be inserted after the package name to pass parameters to the package script.
+anything after the double slash charaters "//" on a line will be treated as a comment.
 the package urls file caintains urls to download package from.
 in this file, each line must contain the package name followed by a tab character and the download url: package<tab>url...
 
@@ -64,8 +65,8 @@ fi &&
 line=1 &&
 until [ $line -gt $(wc -l $deps | cut -d ' ' -f 1) ]
 do
-    #For each package in line
-    for package in $(sed "${line}q;d" $deps | tr ',' ' ')
+    #For each package in line, comments removed
+    for package in $(sed "${line}q;d" $deps | sed 's@//.*@@' | tr ',' ' ')
     do
 	#if we need to start at a specific package
 	if [ $start = 'true' ]; then

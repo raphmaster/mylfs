@@ -25,7 +25,7 @@ if [ $1 -eq 1 -o $1 -eq 2 ]; then #first/second pass
 #undef STANDARD_STARTFILE_PREFIX_2
 #define STANDARD_STARTFILE_PREFIX_1 "/tools/lib/"
 #define STANDARD_STARTFILE_PREFIX_2 ""' >> $file || exit 1
-    done &&
+    done
 fi &&
 sed -i -e '/m64=/s/lib64/lib/' gcc/config/i386/t-linux64 && #change 64-bit libraries default directory to lib
 mkdir -pv build &&
@@ -38,7 +38,7 @@ elif [ $1 -eq 2 ]; then #second pass
 elif [ $1 -eq 3 ]; then #third pass
     rm -vf /usr/lib/gcc &&
     export SED=sed &&
-    ../configure --prefix=/usr --enable-languages=c,c++ --disable-multilib --disable-bootstrap --disable-libmpx --with-system-zlib &&
+    ../configure --prefix=/usr --enable-languages=c,c++ --disable-multilib --disable-bootstrap --disable-libmpx --with-system-zlib
 fi &&
 make -j $procs &&
 if [ $1 -eq 3 ]; then #third pass
