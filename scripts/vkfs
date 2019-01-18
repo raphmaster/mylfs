@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#version 8.3
+
+#change owner of tools to root to prevent user from altering it
+sudo chown -Rv root: ${wdir}tools &&
+#create directories of virtual kernel filesystems
+sudo mkdir -pv ${wdir}{dev,proc,sys,run} &&
+#create required devices nodes only if not already created
+if [ ! -c ${wdir}dev/console ]; then sudo mknod -m 600 ${wdir}dev/console c 5 1; fi &&
+if [ ! -c ${wdir}dev/null ]; then sudo mknod -m 666 ${wdir}dev/null c 1 3; fi &&
+#bind mount /dev from host
+sudo mount -v --bind /dev ${wdir}dev &&
+sudo mount -vt devpts devpts ${wdir}dev/pts -o gid=5,mode=620 &&
+sudo mount -vt proc proc ${wdir}proc &&
+sudo mount -vt sysfs sysfs ${wdir}sys &&
+sudo mount -vt tmpfs tmpfs ${wdir}run &&
+#create a directory if a symbolic link that point to it exists
+if [ -h ${wdir}dev/shm ]; then sudo mkdir -pv ${wdir}$(readlink ${wdir}dev/shm); fi

@@ -4,9 +4,9 @@
 
 if [ $1 -eq 1 ]; then
     #strip libraries
-    strip --strip-debug /tools/lib/* &&
+    strip --strip-debug /tools/lib/*
     #strip binaries
-    /usr/bin/strip --strip-unneeded /tools/{,s}bin/* &&
+    /usr/bin/strip --strip-unneeded /tools/{,s}bin/*
     #remove documentation
     rm -rvf /tools/{,share}/{info,man,doc} &&
     #remove unnedded files

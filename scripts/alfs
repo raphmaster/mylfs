@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#recover absolute script directory
-#note: $_ must be expanded before $#. if not, path stored in $_ is lost
-sdir=$(pwd)/$(dirname $_)/ &&
-
 #Parameters check
 if [ $# -lt 4 ]; then
     echo -e 'Invalid number of parameters!
@@ -35,6 +31,9 @@ if [ ! -e $2 ]; then echo 'Unable to locate dependencies CSV file:' $2; exit 1; 
 if [ ! -e $3 ]; then echo 'Unable to locate packages download URLs file:' $3; exit 1; fi
 if [[ ! $4 =~ ^[0-9]+$ ]]; then echo 'Invalid number of processors to use:' $4; exit 1; fi
 
+#recover absolute script directory
+sdir=$(pwd)/$(dirname $0)/ &&
+sdir=${sdir/#+(\/)//} && #remove all starting "/" in excess
 #Source script library
 . ${sdir}lib &&
 #If working directory do not have trailing slash, add it

@@ -5,7 +5,7 @@
 if [ $1 -eq 1 ]; then #first pass
     #create tools directory for building temporary system
     sudo mkdir -pv ${wdir}tools &&
-    sudo ln -svi ${wdir}tools /tools &&
+    sudo ln -Tsvi ${wdir}tools /tools &&
     sudo chown -Rv $(id -un): ${wdir}tools &&
     chmod -Rv 755 ${wdir}tools
 fi &&
