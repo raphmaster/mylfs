@@ -9,7 +9,7 @@ if [ $1 -eq 2 ]; then #second pass
     GCC_INCDIR=/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.0/include &&
     ln -svf /lib/ld-linux-x86-64.so.2 /lib64 &&
     ln -svf /lib/ld-linux-x86-64.so.2 /lib64/ld-lsb-x86-64.so.3 &&
-    rm -v /usr/include/limits.h
+    rm -vf /usr/include/limits.h
 fi &&
 mkdir -pv build &&
 pushd build &&
@@ -21,7 +21,9 @@ elif [ $1 -eq 2 ]; then #second pass
 fi &&
 make -j $procs &&
 if [ $1 -eq 2 ]; then #second pass
-    make -j $procs check &&
+    make -j $procs check ||
+    read -p 'is glibc test results corrects? (y/n) ' &&
+    if [ $REPLY != 'y' ]; then exit 1; fi &&
     touch /etc/ld.so.conf &&
     sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
 fi &&

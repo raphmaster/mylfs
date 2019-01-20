@@ -2,17 +2,19 @@
 
 #version 8.3
 
-mv -vf /tools/bin/{ld,ld-old} &&
-mv -vf /tools/$(uname -m)-pc-linux-gnu/bin/{ld,ld-old} &&
-mv -vf /tools/bin/{ld-new,ld} &&
+if [ -e /tools/bin/ld-new ]; then
+    mv -vf /tools/bin/{ld,ld-old} &&
+    mv -vf /tools/$(uname -m)-pc-linux-gnu/bin/{ld,ld-old} &&
+    mv -vf /tools/bin/{ld-new,ld}
+fi &&
 ln -svf /tools/bin/ld /tools/$(uname -m)-pc-linux-gnu/bin/ld &&
 gcc -dumpspecs | sed -e 's@/tools@@g' -e '/\*startfile_prefix_spec:/{n;s@.*@/usr/lib/ @}' -e '/\*cpp:/{n;s@$@ -isystem /usr/include@}' > $(dirname $(gcc --print-libgcc-file-name))/specs &&
 echo 'int main(){}' > dummy.c &&
 cc dummy.c -v -Wl,--verbose &> dummy.log &&
 if [[ ! $(readelf -l a.out | grep ': /lib') =~ /lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'Toolchain is not working as expected!'; exit 1; fi &&
-if [[ ! $(grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log) =~ /usr/lib64/crt1\.o\ succeeded[[:space:]]/usr/lib64/crti\.o\ succeeded[[:space:]]/usr/lib64/crtn\.o\ succeeded ]]; then echo 'Incorrect start files!'; exit 1; fi &&
+if [[ ! $(grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log) =~ (/usr/lib.*/crt[1in]\.o\ succeeded[[:space:]]*){3} ]]; then echo 'Incorrect start files!'; exit 1; fi &&
 if [[ ! $(grep -B1 '^ /usr/include' dummy.log) =~ \#include\ \<\.\.\.\>\ search\ starts\ here:[[:space:]]*/usr/include ]]; then echo 'Incorrect compiler header files!'; exit 1; fi &&
 if [[ ! $(grep 'SEARCH.*/usr/lib' dummy.log | sed 's|; |\n|g') =~ SEARCH_DIR\(\"/usr/lib\"\).*SEARCH_DIR\(\"/lib\"\) ]]; then echo 'Incorrect linker search paths!'; exit 1; fi &&
-if [[ ! $(grep "/lib.*/libc.so.6 " dummy.log) =~ attempt\ to\ open\ /lib64/libc\.so\.6\ succeeded ]]; then echo 'Using incorrect libc!'; exit 1; fi &&
-if [[ ! $(grep found dummy.log) =~ found\ ld-linux-x86-64\.so\.2\ at\ /lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'GCC is not using correct dynamic linker!'; exit 1; fi &&
+if [[ ! $(grep "/lib.*/libc.so.6 " dummy.log) =~ attempt\ to\ open\ /lib/libc\.so\.6\ succeeded ]]; then echo 'Using incorrect libc!'; exit 1; fi &&
+if [[ ! $(grep found dummy.log) =~ found\ ld-linux-x86-64\.so\.2\ at\ /lib/ld-linux-x86-64\.so\.2 ]]; then echo 'GCC is not using correct dynamic linker!'; exit 1; fi &&
 rm -v dummy.c a.out dummy.log

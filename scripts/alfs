@@ -57,7 +57,7 @@ if [ $start == 'false' ]; then
     #Creating sources directory where all packages will be downloaded and grant current user full access
     sudo mkdir -pv ${wdir}sources &&
     sudo chown -Rv $(id -un): ${wdir}sources &&
-    sudo chmod -v 750 ${wdir}sources &&
+    sudo chmod -v 755 ${wdir}sources &&
     cut -f 2- $packs | tr '\t' '\n' | wget -i - -nc -P ${wdir}sources
 fi &&
 #For each line in dependencies file

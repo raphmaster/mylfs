@@ -28,25 +28,26 @@ if [ $1 -eq 1 -o $1 -eq 2 ]; then #first/second pass
     done
 fi &&
 sed -i -e '/m64=/s/lib64/lib/' gcc/config/i386/t-linux64 && #change 64-bit libraries default directory to lib
-mkdir -pv build &&
-pushd build &&
+#official documentation recommends building in a separate directory outside top level source
+mkdir -pv ../build &&
+pushd ../build &&
 if [ $1 -eq 1 ]; then #first pass
-    ../configure --target=$LFS_TGT --prefix=/tools --with-glibc-version=2.11 --with-sysroot=$wdir --with-newlib --without-headers --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
+    ../gcc-8.2.0/configure --target=$LFS_TGT --prefix=/tools --with-glibc-version=2.11 --with-sysroot=$wdir --with-newlib --without-headers --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --disable-nls --disable-shared --disable-multilib --disable-decimal-float --disable-threads --disable-libatomic --disable-libgomp --disable-libmpx --disable-libquadmath --disable-libssp --disable-libvtv --disable-libstdcxx --enable-languages=c,c++
 elif [ $1 -eq 2 ]; then #second pass
     export CC=${LFS_TGT}-gcc CXX=${LFS_TGT}-g++ AR=${LFS_TGT}-ar RANLIB=${LFS_TGT}-ranlib &&
-    ../configure --prefix=/tools --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --enable-languages=c,c++ --disable-libstdcxx-pch --disable-multilib --disable-bootstrap --disable-libgomp
+    ../gcc-8.2.0/configure --prefix=/tools --with-local-prefix=/tools --with-native-system-header-dir=/tools/include --enable-languages=c,c++ --disable-libstdcxx-pch --disable-multilib --disable-bootstrap --disable-libgomp
 elif [ $1 -eq 3 ]; then #third pass
     rm -vf /usr/lib/gcc &&
     export SED=sed &&
-    ../configure --prefix=/usr --enable-languages=c,c++ --disable-multilib --disable-bootstrap --disable-libmpx --with-system-zlib
+    ../gcc-8.2.0/configure --prefix=/usr --enable-languages=c,c++ --disable-multilib --disable-bootstrap --disable-libmpx --with-system-zlib
 fi &&
 make -j $procs &&
 if [ $1 -eq 3 ]; then #third pass
     ulimit -s 32768 &&
-    rm ../gcc/testsuite/g++.dg/pr83239.C &&
+    rm ../gcc-8.2.0/gcc/testsuite/g++.dg/pr83239.C &&
     chown -Rv nobody . &&
     su nobody -s /bin/bash -c "PATH=$PATH make -j $procs -k check" &&
-    ../contrib/test_summary | grep -A7 Summ &&
+    ../gcc-8.2.0/contrib/test_summary | grep -A7 Summ &&
     echo 'test summaries can be compared with those located at http://www.linuxfromscratch.org/lfs/build-logs/8.3/' &&
     read -p 'is the above test summaries correct? (y/n) ' result &&
     if [ $result != 'y' ]; then exit 1; fi
@@ -66,13 +67,14 @@ elif [ $1 -eq 3 ]; then #third pass
     echo 'int main(){}' > dummy.c &&
     cc dummy.c -v -Wl,--verbose &> dummy.log &&
     if [[ ! $(readelf -l a.out | grep ': /lib') =~ /lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'Toolchain is not working as expected!'; exit 1; fi &&
-    if [[ ! $(grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log) =~ /usr/lib64.*/crt1\.o\ succeeded[[:space:]]/usr/lib64.*/crti\.o\ succeeded[[:space:]]/usr/lib64.*/crtn\.o\ succeeded ]]; then echo 'Incorrect start files!'; exit 1; fi &&
-    if [[ ! $(grep -B4 '^ /usr/include' dummy.log) =~ \#include\ \<\.\.\.\>\ search\ starts\ here:[[:space:]]*/usr/lib64/gcc/x86_64-pc-linux-gnu/8\.2\.0/include[[:space:]]*/usr/local/include[[:space:]]*/usr/lib64/gcc/x86_64-pc-linux-gnu/8\.2\.0/include-fixed[[:space:]]*/usr/include ]]; then echo 'Incorrect compiler header files!'; exit 1; fi &&
+    if [[ ! $(grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log) =~ /usr/lib/gcc/x86_64-pc-linux-gnu/8\.2\.0.*/crt[1in]\.o\ succeeded[[:space:]]*{3} ]]; then echo 'Incorrect start files!'; exit 1; fi &&
+    if [[ ! $(grep -B4 '^ /usr/include' dummy.log) =~ \#include\ \<\.\.\.\>\ search\ starts\ here:[[:space:]]*/usr/lib/gcc/x86_64-linux-gnu/8\.2\.0/include[[:space:]]*/usr/local/include[[:space:]]*/usr/lib/gcc/x86_64-pc-linux-gnu/8\.2\.0/include-fixed[[:space:]]*/usr/include ]]; then echo 'Incorrect compiler header files!'; exit 1; fi &&
     if [[ ! $(grep 'SEARCH.*/usr/lib' dummy.log | sed 's|; |\n|g') =~ SEARCH_DIR\(\"/usr/x86_64-pc-linux-gnu/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/local/lib64\"\)[[:space:]]SEARCH_DIR\(\"/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/x86_64-pc-linux-gnu/lib\"\)[[:space:]]SEARCH_DIR\(\"/usr/local/lib\"\)[[:space:]]SEARCH_DIR\(\"/lib\"\)[[:space:]]SEARCH_DIR\(\"/usr/lib\"\)\; ]]; then echo 'Incorrect linker search paths!'; exit 1; fi &&
-    if [[ ! $(grep "/lib.*/libc.so.6 " dummy.log) =~ attempt\ to\ open\ /lib64/libc\.so\.6\ succeeded ]]; then echo 'Incorrect libc!'; exit 1; fi &&
+    if [[ ! $(grep "/lib.*/libc.so.6 " dummy.log) =~ attempt\ to\ open\ /lib/libc\.so\.6\ succeeded ]]; then echo 'Incorrect libc!'; exit 1; fi &&
     if [[ ! $(grep found dummy.log) =~ found\ ld-linux-x86-64\.so\.2\ at\ /lib/ld-linux-x86-64\.so\.2 ]]; then echo 'Incorrect GCC dynamic linker!'; exit 1; fi &&
     rm -v dummy.c a.out dummy.log &&
     mkdir -pv /usr/share/gdb/auto-load/usr/lib &&
     mv -vf /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
 fi &&
-remove $0
+remove $0 &&
+rm -rvf ${wdir}sources/build
