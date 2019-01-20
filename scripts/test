@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash +h
 
 #testing purpose only
 
@@ -9,6 +9,7 @@ deps: $deps
 packs: $packs
 procs: $procs
 arg1: $1
-args[1]: ${args[1]}" &&
+args[1]: ${args[1]}
+SHELLOPTS: $SHELLOPTS" &&
 hello &&
 echo "$0 script success"

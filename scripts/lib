@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash +h
 
 #TO BE REMOVED, NO LONGER REQUIRED
 #CSV file l count
@@ -23,7 +23,7 @@ function column_count
 #output: archive name
 function find_archive
 {
-    grep "^$(basename $1)" $packs | cut -f 2 | rev | cut -d '/' -f 1 | rev
+    grep "^$(basename $1)[[:blank:]]" $packs | cut -f 2 | rev | cut -d '/' -f 1 | rev
 }
 
 #find tar archive root directory name from package name in sources working directory

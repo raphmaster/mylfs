@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash +h
 
 #version 8.2.0
 
@@ -46,7 +46,9 @@ if [ $1 -eq 3 ]; then #third pass
     ulimit -s 32768 &&
     rm ../gcc-8.2.0/gcc/testsuite/g++.dg/pr83239.C &&
     chown -Rv nobody . &&
-    su nobody -s /bin/bash -c "PATH=$PATH make -j $procs -k check" &&
+    su nobody -s /bin/bash -c "PATH=$PATH make -j $procs -k check" ||
+    read -p 'gcc test suite returned with an error code... continue to view tests summaries? (y/n) ' &&
+    if [ $REPLY != 'y' ]; then exit 1; fi &&
     ../gcc-8.2.0/contrib/test_summary | grep -A7 Summ &&
     echo 'test summaries can be compared with those located at http://www.linuxfromscratch.org/lfs/build-logs/8.3/' &&
     read -p 'is the above test summaries correct? (y/n) ' result &&
@@ -68,7 +70,7 @@ elif [ $1 -eq 3 ]; then #third pass
     cc dummy.c -v -Wl,--verbose &> dummy.log &&
     if [[ ! $(readelf -l a.out | grep ': /lib') =~ /lib64/ld-linux-x86-64\.so\.2 ]]; then echo 'Toolchain is not working as expected!'; exit 1; fi &&
     if [[ ! $(grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log) =~ /usr/lib/gcc/x86_64-pc-linux-gnu/8\.2\.0.*/crt[1in]\.o\ succeeded[[:space:]]*{3} ]]; then echo 'Incorrect start files!'; exit 1; fi &&
-    if [[ ! $(grep -B4 '^ /usr/include' dummy.log) =~ \#include\ \<\.\.\.\>\ search\ starts\ here:[[:space:]]*/usr/lib/gcc/x86_64-linux-gnu/8\.2\.0/include[[:space:]]*/usr/local/include[[:space:]]*/usr/lib/gcc/x86_64-pc-linux-gnu/8\.2\.0/include-fixed[[:space:]]*/usr/include ]]; then echo 'Incorrect compiler header files!'; exit 1; fi &&
+    if [[ ! $(grep -B4 '^ /usr/include' dummy.log) =~ \#include\ \<\.\.\.\>\ search\ starts\ here:[[:space:]]*/usr/lib/gcc/x86_64-pc-linux-gnu/8\.2\.0/include[[:space:]]*/usr/local/include[[:space:]]*/usr/lib/gcc/x86_64-pc-linux-gnu/8\.2\.0/include-fixed[[:space:]]*/usr/include ]]; then echo 'Incorrect compiler header files!'; exit 1; fi &&
     if [[ ! $(grep 'SEARCH.*/usr/lib' dummy.log | sed 's|; |\n|g') =~ SEARCH_DIR\(\"/usr/x86_64-pc-linux-gnu/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/local/lib64\"\)[[:space:]]SEARCH_DIR\(\"/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/lib64\"\)[[:space:]]SEARCH_DIR\(\"/usr/x86_64-pc-linux-gnu/lib\"\)[[:space:]]SEARCH_DIR\(\"/usr/local/lib\"\)[[:space:]]SEARCH_DIR\(\"/lib\"\)[[:space:]]SEARCH_DIR\(\"/usr/lib\"\)\; ]]; then echo 'Incorrect linker search paths!'; exit 1; fi &&
     if [[ ! $(grep "/lib.*/libc.so.6 " dummy.log) =~ attempt\ to\ open\ /lib/libc\.so\.6\ succeeded ]]; then echo 'Incorrect libc!'; exit 1; fi &&
     if [[ ! $(grep found dummy.log) =~ found\ ld-linux-x86-64\.so\.2\ at\ /lib/ld-linux-x86-64\.so\.2 ]]; then echo 'Incorrect GCC dynamic linker!'; exit 1; fi &&
