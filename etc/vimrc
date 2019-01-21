@@ -1,3 +1,5 @@
+set nocompatible	" Use Vim full features, first option to be set because it changes many other options
+
 " Vim will load $VIMRUNTIME/defaults.vim if the user does not have a vimrc.
 " This happens after /etc/vimrc{.local} are loaded, so it will override any settings in these files.
 " If you don't want that to happen, uncomment the below line to prevent defaults.vim from being loaded.
@@ -19,7 +21,6 @@ set background=dark
 filetype plugin indent on
 "endif
 
-set nocompatible	" Use Vim full features
 set backspace=indent,eol,start	"more powerful basckspace
 set history=50		" Save 50 last commands lines
 let c_comment_strings=1 " Highlight string in c comments

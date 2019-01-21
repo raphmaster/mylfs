@@ -59,7 +59,7 @@ elif [ $1 -eq 2 ]; then #second pass
     localedef -i ru_RU -f UTF-8 ru_RU.UTF-8 &&
     localedef -i tr_TR -f UTF-8 tr_TR.UTF-8 &&
     localedef -i zh_CN -f GB18030 zh_CN.GB18030 &&
-    #install my own country locales
+    #install your own country locales
     #supported locales can be found in glibc-2.28/localedata/SUPPORTED
     localedef -i en_CA -f UTF-8 en_CA.UTF-8 &&
     localedef -i en_CA -f ISO-8859-1 en_CA &&
@@ -77,7 +77,7 @@ elif [ $1 -eq 2 ]; then #second pass
     done &&
     cp -v zone.tab zone1970.tab iso3166.tab $ZONEINFO &&
     zic -d $ZONEINFO -p America/New_York &&
-    #install the time zone dor your location
+    #install the time zone for your location
     #you may use the command tzselect to help you choose the right time zone
     #other possibilities can be found in /usr/share/zoneinfo
     cp -v /usr/share/zoneinfo/America/Montreal /etc/localtime &&

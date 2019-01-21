@@ -55,13 +55,13 @@ DISTRO_MINI="LFS" # Short name used in filenames for distro config
 #HEADLESS=yes
 
 # Write out fsck progress if yes
-VERBOSE_FSCK=no
+VERBOSE_FSCK=y
 
 # Speed up boot without waiting for settle in udev
 #OMIT_UDEV_SETTLE=y
 
 # Speed up boot without waiting for settle in udev_retry
-OMIT_UDEV_RETRY_SETTLE=yes
+OMIT_UDEV_RETRY_SETTLE=y
 
 # Skip cleaning /tmp if yes
 #SKIPTMPCLEAN=no

@@ -13,5 +13,5 @@ KEYMAP="qwerty/defkeymap.map"
 #The console bootscript will convert an available keymap to UTF-8 on the fly if this variable is set to the encoding of the available non-UTF-8 keymap.
 #LEGACY_CHARSET="ISO-8859-1"
 
-#This variable specifies the arguments for the setfont program. usually, this is the font name, -m and the character map. check in /eur/share/consolefonts for valid fonts.
+#This variable specifies the arguments for the setfont program. usually, this is the font name, -m and the character map. check in usr/share/consolefonts for valid fonts.
 FONT="lat1-16 -m 8859-1"
