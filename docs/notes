@@ -18,3 +18,11 @@ config files:
 /etc/fstab,filesystem mount table
 
 kernel config:
+/lib/firmware: directory to put firmware loaded by the kernel, some of them can be obtained at git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git
+Device Drivers  --->
+  Generic Driver Options  --->
+   [ ] Support for uevent helper [CONFIG_UEVENT_HELPER]
+   [*] Maintain a devtmpfs filesystem to mount at /dev [CONFIG_DEVTMPFS]
+
+Kernel hacking  --->
+       Choose kernel unwinder (Frame pointer unwinder)  ---> [CONFIG_UNWINDER_FRAME_POINTER]

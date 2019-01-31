@@ -5,7 +5,8 @@
 extract $0 &&
 make -j $procs mrproper &&
 if [ $1 -eq 1 -o $1 -eq 2 ]; then make -j $procs INSTALL_HDR_PATH=dest headers_install
-elif [ $1 -eq 3 ]; then make -j $procs menuconfig
+elif [ $1 -eq 3 ]; then
+    make -j $procs menuconfig
 fi &&
 if [ $1 -eq 1 ]; then #first pass
     cp -rv dest/include/* /tools/include

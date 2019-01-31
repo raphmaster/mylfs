@@ -8,6 +8,3 @@ sudo cp -rv ${sdir}.. ${wdir}alfs &&
 #enter chroot and continue executing scripts
 #set start script as first script of lfs-deps to skip wget from checking packages downloads since it is not installed yet
 sudo chroot $wdir /tools/bin/env -i HOME=/root TERM="$TERM" PS1='\u:\w\$ ' PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin /tools/bin/bash /alfs/scripts/alfs / /alfs/lfs-deps /alfs/$(basename $packs) $procs '#preparing#2'
-#do not continue executing other scripts because they were executed in the previous command
-#echo 'transition script failed! message below can be safely ignored...' &&
-#exit 1 #tell caller that this script has failed
