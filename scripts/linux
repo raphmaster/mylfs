@@ -15,7 +15,7 @@ elif [ $1 -eq 2 ]; then #second pass
     cp -rv dest/include/* /usr/include
 elif [ $1 -eq 3 ]; then
     make -j $procs &&
-    #make -j $procs modules_install && #install modules if you use them in your configuration
+    #make -j $procs modules_install && #install modules (in /lib/modules) if you use them in your configuration
     cp -iv arch/x86/boot/bzImage /boot/vmlinuz-4.18.5-lfs-8.3 && #aasuming x86 architecture
     cp -iv System.map /boot/System.map-4.18.5 && #install map file
     cp -iv .config /boot/config-4.18.5 && #keep config for future reference

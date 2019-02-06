@@ -1,5 +1,7 @@
 #!/tools/bin/bash -h
 
+cp -v /alfs/etc/passwd /etc/passwd &&
+cp -v /alfs/etc/group /etc/group &&
 mkdir -pv /{bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt} &&
 mkdir -pv /{media/{floppy,cdrom},sbin,srv,var} &&
 install -dv -m 0750 /root &&

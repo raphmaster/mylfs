@@ -31,7 +31,5 @@ elif [ $1 -eq 2 ]; then #second pass
     HOME=/root &&
     PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin &&
     export PS1 HOME TERM PATH &&
-    mkdir -pv /etc &&
-    cp -v /alfs/etc/passwd /etc/passwd &&
-    cp -v /alfs/etc/group /etc/group
+    mkdir -pv /etc
 fi
